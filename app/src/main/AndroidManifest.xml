@@ -42,8 +42,11 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:usesCleartextTraffic="true"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+       >
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -62,7 +65,8 @@
         </activity>
         <activity
             android:name="nec.cst.pra.village.VillageIntroActivity"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="nec.cst.pra.survey.MainActivity"
             android:label="Village Survey" />
@@ -107,8 +111,9 @@
         <activity
             android:name="nec.cst.pra.TeamMember"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".MainActivityPra"
-            android:windowSoftInputMode="stateHidden"/>
+        <activity
+            android:name=".MainActivityPra"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name="nec.cst.pra.Observation"
             android:windowSoftInputMode="stateHidden" />
@@ -160,13 +165,34 @@
             android:name="nec.cst.pra.service.HttpService"
             android:exported="false" />
 
+        <activity android:name="nec.cst.pra.AttachementOffline" />
+
         <activity android:name="nec.cst.pra.UploadActivity" />
         <activity android:name="nec.cst.pra.village.ActivityMediaOnline" />
         <activity android:name="nec.cst.pra.household.MainActivityAllSurvey"></activity>
         <activity android:name="nec.cst.pra.household.MainActivityHouseHold"></activity>
         <activity android:name="nec.cst.pra.action.MainActivityAllSurveyAction"></activity>
         <activity android:name="nec.cst.pra.action.MainActivityAction"></activity>
-        <activity android:name="nec.cst.pra.survey.PieChartActivity"></activity>
+        <activity
+            android:name="nec.cst.pra.survey.PieChartActivity"
+            android:theme="@style/SpinExam"></activity>
+        <activity android:name=".gpdp.MainActivityGpdp" />
+        <activity android:name=".gpdp.GramsabhaActivity" />
+        <activity android:name=".gpdp.GalleryActivity" />
+        <activity android:name=".gpdp.FacilitatorActivity" />
+        <activity android:name=".gpdp.UserDetailActivity" />
+        <activity android:name=".gpdp.PanchayatActivityAllSurvey" />
+        <activity android:name=".gpdp.UserActivityAllSurvey" />
+        <activity android:name=".gpdp.FacilitatorActivityAllSurvey" />
+        <activity android:name=".gpdp.GramsabhaActivityAllSurvey" />
+        <activity android:name=".gpdp.GalleryActivityAllSurvey" />
+        <activity android:name=".gpdp.PanchayatActivity"></activity>
+        <activity android:name=".survey.MainActivityAllVillage" />
+        <activity android:name=".ForgotPassword" />
+        <activity android:name=".survey.MainActivityAllVillagePrint" />
+        <activity
+            android:name=".survey.ColumnChartActivity"
+            android:theme="@style/SpinExam" />
     </application>
 
 </manifest>

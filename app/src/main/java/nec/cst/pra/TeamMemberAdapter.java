@@ -24,7 +24,7 @@ public class TeamMemberAdapter extends RecyclerView.Adapter<TeamMemberAdapter.My
         private final CustomFontTextView name;
         private final CustomFontTextView pincode;
         CustomFontTextView designation;
-        CustomFontTextView designationinpra;
+        CustomFontTextView designationinpra,category;
         CustomFontTextView address;
         CustomFontTextView phone;
         CustomFontTextView experience;
@@ -40,6 +40,7 @@ public class TeamMemberAdapter extends RecyclerView.Adapter<TeamMemberAdapter.My
             designationinpra = (CustomFontTextView) view.findViewById(R.id.designationinpra);
             address = (CustomFontTextView) view.findViewById(R.id.address);
             phone = (CustomFontTextView) view.findViewById(R.id.phone);
+            category = (CustomFontTextView) view.findViewById(R.id.category);
             education = (CustomFontTextView) view.findViewById(R.id.education);
             experience = (CustomFontTextView) view.findViewById(R.id.experience);
             weblink = (CustomFontTextView) view.findViewById(R.id.socialmedia);
@@ -81,6 +82,7 @@ public class TeamMemberAdapter extends RecyclerView.Adapter<TeamMemberAdapter.My
         holder.weblink.setText(member.getSocialmedia());
         holder.geotag.setText(member.getGeotag());
         holder.pincode.setText(member.getPincode());
+        holder.category.setTag(member.category);
         GlideApp.with(mainActivityUser).load(member.getImage())
                 .thumbnail(0.5f)
                 .placeholder(R.drawable.profilemember)

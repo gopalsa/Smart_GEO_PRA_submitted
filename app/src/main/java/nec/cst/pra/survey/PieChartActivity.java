@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,11 +19,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,6 +34,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -48,12 +54,14 @@ import com.anychart.chart.common.dataentry.ValueDataEntry;
 import com.anychart.charts.Pie;
 import com.anychart.enums.Align;
 import com.anychart.enums.LegendLayout;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.gson.Gson;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.magorasystems.materialtoolbarspinner.MaterialToolbarSpinner;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -72,10 +80,17 @@ import java.util.List;
 import java.util.Map;
 
 
+import nec.cst.pra.ConvertUtils;
 import nec.cst.pra.R;
+import nec.cst.pra.Vrp;
+import nec.cst.pra.app.AndroidUtils;
 import nec.cst.pra.app.AppConfig;
 import nec.cst.pra.app.AppController;
 import nec.cst.pra.app.HeaderFooterPageEvent;
+import nec.cst.pra.app.UserGroup;
+import nec.cst.pra.app.UserGroupToolbarSpinnerAdapter;
+import nec.cst.pra.db.DbVrp;
+import nec.cst.pra.household.MainActivityHouseHold;
 import nec.cst.pra.household.Mainbean;
 import nec.cst.pra.household.SurveyItem;
 import nec.cst.pra.survey.adapters.BaseStudentAdapter;
@@ -85,7 +100,27 @@ import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-public class PieChartActivity extends AppCompatActivity implements SurveyItemClick {
+public class PieChartActivity extends AppCompatActivity implements SurveyItemClick,
+        AdapterView.OnItemSelectedListener,
+        View.OnClickListener,
+        SearchView.OnCloseListener {
+
+    ProgressDialog pDialog;
+    private String TAG = getClass().getSimpleName();
+    private Toolbar toolbar;
+
+    private MaterialToolbarSpinner spinner;
+
+    private UserGroupToolbarSpinnerAdapter spinnerAdapter;
+    public static final String buSurveyerId = "buSurveyerIdKey";
+    public static final String vrpid = "vrpidKey";
+    public static final String update = "updateKey";
+    String vrpId = "";
+    public static final String tittle = "tittleKey";
+
+    private Vrp vrp;
+    DbVrp dbVrp;
+    String selectedVillage = "";
 
     private static final int CAMERA_GALLERY_CODE = 100;
 
@@ -117,12 +152,27 @@ public class PieChartActivity extends AppCompatActivity implements SurveyItemCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pie_chart);
 
+        pDialog = new ProgressDialog(this);
+        pDialog.setCancelable(false);
+
+
+        sharedpreferences = this.getSharedPreferences(mypreference,
+                Context.MODE_PRIVATE);
+        dbVrp = new DbVrp(this);
+        if (sharedpreferences.contains(vrpid)) {
+            vrpId = sharedpreferences.getString(vrpid, "").trim();
+        }
+        vrp = new Gson().fromJson(ConvertUtils.sample(dbVrp.getDataByvrpid(vrpId).get(1)), Vrp.class);
+
+
+        initToolbar();
+
 
         if (!checkPermission(new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE})) {
             requestPermission(new String[]{WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE}, CAMERA_GALLERY_CODE);
         }
 
-        getSupportActionBar().setTitle("Smart Survey");
+        // getSupportActionBar().setTitle("Smart Survey");
 
         sharedpreferences = this.getSharedPreferences(mypreference,
                 Context.MODE_PRIVATE);
@@ -139,26 +189,26 @@ public class PieChartActivity extends AppCompatActivity implements SurveyItemCli
         mastersList.setAdapter(mRecyclerAdapterMaster);
 
 
-        getAllData();
+        getVillages();
 
     }
 
-    private void getAllData() {
+    private void getAllData(final String villageName) {
         String tag_string_req = "req_register";
-        // showDialog();
+        showDialog();
 
         String url = null;
         boolean newString;
         Bundle extras = getIntent().getExtras();
         if (extras == null) {
             newString = false;
-            url = AppConfig.URL_GET_All_SURVEY;
+            url = AppConfig.URL_GET_All_NEC_SURVEY;
         } else {
             newString = extras.getBoolean("isUser");
             if (newString) {
-                url = AppConfig.URL_GET_USER_SURVEY;
+                url = AppConfig.URL_GET_All_NEC_SURVEY;
             } else {
-                url = AppConfig.URL_GET_All_SURVEY;
+                url = AppConfig.URL_GET_All_NEC_SURVEY;
             }
         }
 
@@ -167,20 +217,25 @@ public class PieChartActivity extends AppCompatActivity implements SurveyItemCli
                 url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                hideDialog();
                 Log.d("Register Response: ", response.toString());
                 try {
                     JSONObject jObj = new JSONObject(response);
                     boolean error = jObj.getBoolean("error");
                     if (!error) {
-                        JSONArray jsonArray = jObj.getJSONArray("survey");
+                        JSONArray jsonArray = jObj.getJSONArray("uba");
                         surveyArrayList = new ArrayList<>();
                         for (int i = 0; i < jsonArray.length(); i++) {
                             try {
                                 JSONObject dataObject = jsonArray.getJSONObject(i);
                                 Mainbean survey = new Gson().fromJson(dataObject.getString("data"), Mainbean.class);
-                                survey.setId(dataObject.getString("id"));
-                                survey.setStudentid(dataObject.getString("studentid"));
-                                surveyArrayList.add(survey);
+                                survey.setId(dataObject.getString("formid"));
+                                //survey.setStudentid(dataObject.getString("studentid"));
+                                if (villageName.equals("All")) {
+                                    surveyArrayList.add(survey);
+                                } else if (survey.getGramPanchayat().trim().equals(villageName.trim())) {
+                                    surveyArrayList.add(survey);
+                                }
                             } catch (Exception e) {
                                 Log.e("xxxxxxxxxx", String.valueOf(i) + "        " + e.toString());
                             }
@@ -198,6 +253,7 @@ public class PieChartActivity extends AppCompatActivity implements SurveyItemCli
 
             @Override
             public void onErrorResponse(VolleyError error) {
+                hideDialog();
                 Log.e("Registration Error: ", error.getMessage());
                 Toast.makeText(getApplicationContext(),
                         "Some Network Error.Try after some time", Toast.LENGTH_LONG).show();
@@ -206,7 +262,11 @@ public class PieChartActivity extends AppCompatActivity implements SurveyItemCli
         }) {
             protected Map<String, String> getParams() {
                 HashMap localHashMap = new HashMap();
-                localHashMap.put("key", sharedpreferences.getString(buStudentId, ""));
+
+                localHashMap.put("key", "ALLDATA");
+                localHashMap.put("db", "nec");
+                localHashMap.put("university", sharedpreferences.getString(buSurveyerId, ""));
+
                 return localHashMap;
             }
         };
@@ -360,7 +420,7 @@ public class PieChartActivity extends AppCompatActivity implements SurveyItemCli
             departmentCountMap.put("Valid", validResponse);
             String sub = "Total Survey : " + String.valueOf(surveyArrayList.size()) + "\nValid Responses : " + String.valueOf(validResponse)
                     + "\nInvalid or Skipped : " + String.valueOf(invalidResponse);
-            titleText.setText("Bharathiyar University UBA 2.0 Household survey\n" + title);
+            titleText.setText("NEC UBA 2.0 Household survey\n" + title);
             exttitle.setVisibility(View.GONE);
 
             if (isGraph) {
@@ -704,8 +764,9 @@ public class PieChartActivity extends AppCompatActivity implements SurveyItemCli
         progressDialog.hide();
 
         Uri photoURI = FileProvider.getUriForFile(getApplicationContext(),
-                getApplicationContext().getPackageName() + ".smart.cst.pra.provider",
-                new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/PDF/" + "demo" + ".pdf"));
+                getApplicationContext().getPackageName() + AppConfig.packageName + ".provider",
+                new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+                        + "/PDF/" + "demo" + ".pdf"));
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(photoURI
@@ -773,6 +834,130 @@ public class PieChartActivity extends AppCompatActivity implements SurveyItemCli
                 .create()
                 .show();
     }
+
+    // region AdapterView.OnItemSelectedListener (Spinner item selected)
+    @Override
+    public void onItemSelected(AdapterView<?> parent,
+                               View view, int position, long id) {
+        UserGroup userGroup = spinnerAdapter.getItem(position);
+        selectedVillage = userGroup.getName();
+        if (userGroup.getName().length() > 0) {
+            getAllData(userGroup.getName());
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+        Toast.makeText(PieChartActivity.this,
+                "Nothing is selected", Toast.LENGTH_SHORT).show();
+    }
+    // endregion
+
+    // region View.OnClickListener
+    @Override
+    public void onClick(View view) {
+        spinner.setVisibility(View.GONE);
+        Toast.makeText(PieChartActivity.this, "Open search",
+                Toast.LENGTH_SHORT).show();
+
+    }
+    // endregion
+
+    // region SearchView.OnCloseListener
+    @Override
+    public boolean onClose() {
+        spinner.setVisibility(View.VISIBLE);
+        Toast.makeText(PieChartActivity.this, "Close search",
+                Toast.LENGTH_SHORT).show();
+
+        return false;
+    }
+    // endregion
+
+    private void initToolbar() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.inflateMenu(R.menu.main_print);
+        toolbar.getMenu().findItem(R.id.print).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                printSurveyItems = new PrintSurveyItem[surveyItems.size()];
+                questionItem = 0;
+                callPrintMethod();
+                return false;
+            }
+        });
+    }
+
+
+    private void hideDialog() {
+
+        if (this.pDialog.isShowing()) this.pDialog.dismiss();
+    }
+
+    private void showDialog() {
+
+        if (!this.pDialog.isShowing()) this.pDialog.show();
+    }
+
+    private void getVillages() {
+        this.pDialog.setMessage("Fetching...");
+        showDialog();
+        StringRequest local16 = new StringRequest(Request.Method.GET, AppConfig.URL_UNI_DETAIL_NAME + "?name=" + vrp.getInstitution(), new Response.Listener<String>() {
+            public void onResponse(String paramString) {
+                Log.d("tag", "Register Response: " + paramString.toString());
+                hideDialog();
+                try {
+                    JSONObject localJSONObject1 = new JSONObject(paramString);
+                    String str = localJSONObject1.getString("message");
+                    if (localJSONObject1.getInt("success") == 1) {
+                        JSONObject dataObject = localJSONObject1.getJSONArray("detail").getJSONObject(0);
+                        String villagenames = dataObject.getString("VillageName");
+
+                        String[] lists = villagenames.split(",");
+
+                        List<UserGroup> userGroupList = new ArrayList<>();
+                        userGroupList.add(new UserGroup("All"));
+                        for (int i = 0; i < lists.length; i++) {
+                            String name = lists[i].trim();
+                            if (name.length() > 2) {
+                                UserGroup userGroup1 = new UserGroup();
+                                userGroup1.setName(name);
+                                userGroupList.add(userGroup1);
+                            }
+                        }
+
+                        spinner = (MaterialToolbarSpinner)
+                                toolbar.findViewById(R.id.mt_spinner);
+                        spinnerAdapter = new UserGroupToolbarSpinnerAdapter(PieChartActivity.this);
+                        spinnerAdapter.setUserGroupList(userGroupList);
+                        spinner.setAdapter(spinnerAdapter);
+                        spinner.setOnItemSelectedListener(PieChartActivity.this);
+//                        if (userGroupList.size() > 0) {
+//                            getAllData(userGroupList.get(0).getName());
+//                        }
+                    }
+                    Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
+                    return;
+                } catch (JSONException localJSONException) {
+                    localJSONException.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            public void onErrorResponse(VolleyError paramVolleyError) {
+                Log.e("tag", "Fetch Error: " + paramVolleyError.getMessage());
+                Toast.makeText(getApplicationContext(), paramVolleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                hideDialog();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                HashMap<String, String> localHashMap = new HashMap<String, String>();
+                return localHashMap;
+            }
+        };
+        AppController.getInstance().addToRequestQueue(local16, TAG);
+    }
+
+
 }
 
 

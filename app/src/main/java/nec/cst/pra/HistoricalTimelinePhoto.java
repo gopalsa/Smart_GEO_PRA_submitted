@@ -1,6 +1,7 @@
 package nec.cst.pra;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -79,7 +80,7 @@ public class HistoricalTimelinePhoto extends AppCompatActivity {
         mRecyclerViewhistory.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), mRecyclerViewhistory, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, final int position) {
-                addImage(position, historyList.get(position).getTag(), "Update images");
+                optionPicker(position,HistoricalTimelinePhoto.this);
             }
 
             @Override
@@ -254,6 +255,34 @@ public class HistoricalTimelinePhoto extends AppCompatActivity {
             gps.showSettingsAlert();
         }
         b.show();
+    }
+
+
+    public void optionPicker(final int position, final Context context) {
+
+        final CharSequence[] items;
+
+        items = new CharSequence[2];
+        items[0] = "View";
+        items[1] = "Edit";
+
+
+        android.app.AlertDialog.Builder alertdialog = new android.app.AlertDialog.Builder(context);
+        alertdialog.setTitle("Select");
+        alertdialog.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (items[item].equals("View")) {
+                    Intent localIntent = new Intent(context, AttachementOffline.class);
+                    localIntent.putExtra("filePath", historyList.get(position).getPlotimage());
+                    startActivity(localIntent);
+                } else if (items[item].equals("Edit")) {
+                    addImage(position, historyList.get(position).getTag(), "Update images");
+
+                }
+            }
+        });
+        alertdialog.show();
     }
 
 }

@@ -15,6 +15,14 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="#fff"
+            android:scrollbars="vertical" />
+
         <FrameLayout
             android:id="@+id/frame"
             android:layout_width="match_parent"
@@ -43,68 +51,144 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical">
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true">
 
-        <EditText
-            android:id="@+id/referenceGp1"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:backgroundTint="@color/white"
-            android:hint="GP 1"
-            android:padding="10dp" />
+            android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/referenceGp2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:backgroundTint="@color/white"
-            android:hint="GP 2"
-            android:padding="10dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autoLink="web"
+                android:background="@color/white"
+                android:text="@string/google"
+                android:textSize="15dp" />
 
-        <EditText
-            android:id="@+id/referenceGp3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:backgroundTint="@color/white"
-            android:hint="GP 3"
-            android:padding="10dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#fff"
+                android:orientation="horizontal"
+                android:paddingTop="5dp">
 
-        <EditText
-            android:id="@+id/referenceGp4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:backgroundTint="@color/white"
-            android:hint="GP 4"
-            android:padding="10dp" />
-        <EditText
-            android:id="@+id/referenceGp5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:backgroundTint="@color/white"
-            android:hint="GP 5"
-            android:padding="10dp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:autoLink="web"
+                    android:background="@color/white"
+                    android:text="@string/googlee"
+                    android:textSize="15dp" />
 
-        <TextView
-            android:id="@+id/submit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/accent"
-            android:gravity="center"
-            android:padding="15dp"
-            android:text="SUBMIT"
-            android:textColor="#fff"
-            android:textSize="14dp"
-            android:textStyle="bold" />
-    </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:autoLink="web"
+                    android:background="@color/white"
+                    android:text="@string/googleee"
+                    android:textSize="15dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:autoLink="web"
+                    android:background="@color/white"
+                    android:text="@string/googleeee"
+                    android:textSize="15dp" />
+            </LinearLayout>
+
+            <com.github.florent37.expansionpanel.ExpansionHeader
+                android:id="@+id/sampleHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:expansion_headerIndicator="@id/headerIndicator"
+                app:expansion_layout="@id/expansionLayout"
+                app:expansion_toggleOnClick="true">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="@android:color/white"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp">
+
+                    <TextView
+                        android:id="@+id/title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="GP Details"
+                        android:textColor="#3E3E3E" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="120dp"
+                        android:text=""
+                        android:textColor="#AAA" />
+
+                    <ImageView
+                        android:id="@+id/headerIndicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="16dp"
+                        android:adjustViewBounds="true"
+                        app:srcCompat="@drawable/ic_expansion_header_indicator_grey_24dp" />
+
+                </RelativeLayout>
+
+            </com.github.florent37.expansionpanel.ExpansionHeader>
+
+            <com.github.florent37.expansionpanel.ExpansionLayout
+                android:id="@+id/expansionLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:expansion_expanded="true">
+
+                <LinearLayout
+                    android:id="@+id/container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/referenceGp1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:backgroundTint="@color/white"
+                        android:hint="Start here..."
+                        android:padding="10dp" />
+
+
+                </LinearLayout>
+
+            </com.github.florent37.expansionpanel.ExpansionLayout>
+
+            <TextView
+                android:id="@+id/submit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/accent"
+                android:gravity="center"
+                android:padding="15dp"
+                android:text="SUBMIT"
+                android:textColor="#fff"
+                android:textSize="14dp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
 
 
 </RelativeLayout>

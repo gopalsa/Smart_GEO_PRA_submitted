@@ -17,6 +17,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -45,6 +47,7 @@ import nec.cst.pra.R;
 import nec.cst.pra.app.AppConfig;
 import nec.cst.pra.app.AppController;
 import nec.cst.pra.app.HeaderFooterPageEvent;
+import nec.cst.pra.survey.PrintSurveyItem;
 
 
 public class MainActivityAllSurvey extends AppCompatActivity implements OnSurveyClick {
@@ -147,6 +150,7 @@ public class MainActivityAllSurvey extends AppCompatActivity implements OnSurvey
             }
         }) {
             protected Map<String, String> getParams() {
+
                 HashMap localHashMap = new HashMap();
                 localHashMap.put("key", sharedpreferences.getString(buSurveyerId, ""));
                 localHashMap.put("db", "nec");
@@ -204,6 +208,76 @@ public class MainActivityAllSurvey extends AppCompatActivity implements OnSurvey
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_print, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.print) {
+            try {
+                String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/PDF";
+                File dir = new File(path);
+                if (!dir.exists())
+                    dir.mkdirs();
+                Log.d("PDFCreator", "PDF Path: " + path);
+                File file = new File(dir, "demo" + ".pdf");
+                FileOutputStream fOut = new FileOutputStream(file);
+                Document document = new Document();
+                document.setMargins(60, 60, 60, 60);
+                PdfWriter pdfWriter = PdfWriter.getInstance(document, fOut);
+                Rectangle rect = new Rectangle(175, 20, 530, 800);
+                pdfWriter.setBoxSize("art", rect);
+
+                Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.cst_pdf);
+                Bitmap bu = BitmapFactory.decodeResource(getResources(), R.drawable.bu_logo);
+
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                icon.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                byte[] byteArray = stream.toByteArray();
+
+                ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
+                bu.compress(Bitmap.CompressFormat.PNG, 100, stream1);
+                byte[] byteArray1 = stream1.toByteArray();
+
+                HeaderFooterPageEvent event = new HeaderFooterPageEvent(Image.getInstance(byteArray), Image.getInstance(byteArray1));
+                pdfWriter.setPageEvent(event);
+
+                document.open();
+                AppConfig.addMetaData(document);
+                // AppConfig.addTitlePage(document);
+                for (int i = 0; i < itemArrayList.size(); i++) {
+                    AppConfig.addContent(document, itemArrayList.get(i), MainActivityAllSurvey.this);
+                }
+                document.close();
+
+
+            } catch (Error | Exception e) {
+                e.printStackTrace();
+            }
+            Uri photoURI = FileProvider.getUriForFile(getApplicationContext(),
+                    getApplicationContext().getPackageName() + AppConfig.packageName + ".provider",
+                    new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+                            + "/PDF/" + "demo" + ".pdf"));
+
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(photoURI
+                    , "application/pdf");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void onEditClick(int position) {
@@ -220,7 +294,7 @@ public class MainActivityAllSurvey extends AppCompatActivity implements OnSurvey
             if (!dir.exists())
                 dir.mkdirs();
             Log.d("PDFCreator", "PDF Path: " + path);
-            File file = new File(dir, itemArrayList.get(position).name + ".pdf");
+            File file = new File(dir, "demo" + ".pdf");
             FileOutputStream fOut = new FileOutputStream(file);
             Document document = new Document();
             document.setMargins(60, 60, 60, 60);
@@ -246,16 +320,17 @@ public class MainActivityAllSurvey extends AppCompatActivity implements OnSurvey
             AppConfig.addMetaData(document);
             // AppConfig.addTitlePage(document);
             AppConfig.addContent(document, itemArrayList.get(position), MainActivityAllSurvey.this);
+
             document.close();
 
 
         } catch (Error | Exception e) {
             e.printStackTrace();
         }
-        Uri photoURI = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".smart.cst.pra.provider",
-
-                new File(Environment.getExternalStorageDirectory()
-                        .getAbsolutePath() + "/PDF/" + itemArrayList.get(position).name + ".pdf"));
+        Uri photoURI = FileProvider.getUriForFile(getApplicationContext(),
+                getApplicationContext().getPackageName() + AppConfig.packageName + ".provider",
+                new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+                        + "/PDF/" + "demo" + ".pdf"));
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setDataAndType(photoURI

@@ -6,16 +6,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:weightSum="3.5"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:weightSum="3.5">
 
     <LinearLayout
         android:id="@+id/headerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:gravity="center"
         android:layout_weight="1.5"
+        android:gravity="center"
         android:orientation="vertical">
 
         <ImageView
@@ -29,10 +29,10 @@
         <nec.cst.pra.CustomFontTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
             android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
             android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="10dp"
             android:text="@string/title_fingerprint"
             android:textColor="@color/jaguar"
             android:textSize="24sp"
@@ -44,8 +44,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:gravity="center"
-            android:paddingEnd="30dp"
             android:paddingStart="30dp"
+            android:paddingEnd="30dp"
             android:textAlignment="center"
             android:textColor="@color/bpRed"
             android:textSize="14sp" />
@@ -64,24 +64,24 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_below="@+id/list_item_genre_icon"
-            android:layout_weight="1"
             android:layout_gravity="center"
+            android:layout_weight="1"
             android:background="#e4e3e3" />
 
         <nec.cst.pra.CustomFontTextView
             android:layout_width="match_parent"
-            android:text="Or"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_weight="1"
             android:gravity="center"
-            android:layout_height="wrap_content" />
+            android:text="Or" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_weight="1"
-            android:layout_gravity="center"
             android:layout_below="@+id/list_item_genre_icon"
+            android:layout_gravity="center"
+            android:layout_weight="1"
             android:background="#e4e3e3" />
 
 
@@ -129,8 +129,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:hint="Mobile"
-
                         android:inputType="phone"
+                        android:text="9444930094"
                         android:textColorHint="#c6c6c6" />
 
                 </android.support.design.widget.TextInputLayout>
@@ -156,6 +156,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    app:passwordToggleEnabled="true"
                     android:layout_weight="0.25">
 
                     <EditText
@@ -164,8 +165,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:hint="Password"
-
                         android:inputType="textCapWords"
+                        android:text="Sumathi1408"
                         android:textColorHint="#c6c6c6" />
 
                 </android.support.design.widget.TextInputLayout>
@@ -189,8 +190,8 @@
                     android:gravity="center"
                     android:text="LOG IN "
                     android:textColor="#fff"
-                    app:fontName="maven"
-                    android:textSize="15dp" />
+                    android:textSize="15dp"
+                    app:fontName="maven" />
             </LinearLayout>
 
 
@@ -212,6 +213,7 @@
                     app:fontName="maven" />
 
                 <nec.cst.pra.CustomFontTextView
+                    android:id="@+id/forgotPassword"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"

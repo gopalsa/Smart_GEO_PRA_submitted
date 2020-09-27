@@ -75,4 +75,19 @@
         <item name="android:topDark">@color/colorPrimary</item>
     </style>
 
+    <style name="ThemeOverlay.SpinExam.Toolbar" parent="ThemeOverlay.MTS.Toolbar">
+        <item name="colorControlNormal">#fff</item>
+    </style>
+    <style name="SpinExam" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="toolbarStyle">@style/Widget.SpinExam.Toolbar</item>
+        <item name="toolbarSpinnerStyle">@style/Widget.MTS.Spinner.Toolbar</item>
+    </style>
+
+    <style name="Widget.SpinExam.Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">?attr/colorPrimary</item>
+    </style>
 </resources>

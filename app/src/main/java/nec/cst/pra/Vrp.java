@@ -14,7 +14,8 @@ public class Vrp {
     String gmail;
     String depNo;
     String password;
-
+    String uniId;
+    String category;
 
     public Vrp() {
     }
@@ -25,7 +26,7 @@ public class Vrp {
 
     public void setData(String studentid, String image, String name, String geotag,
                         String address, String contact, String whatsapp, String institution,
-                        String gmail,String depNo, String password) {
+                        String gmail, String depNo, String password, String uniId,String category) {
         this.studentid = studentid;
         this.image = image;
         this.name = name;
@@ -35,8 +36,18 @@ public class Vrp {
         this.whatsapp = whatsapp;
         this.institution = institution;
         this.gmail = gmail;
-        this.depNo=depNo;
+        this.depNo = depNo;
         this.password = password;
+        this.uniId = uniId;
+        this.category=category;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getDepNo() {
@@ -125,5 +136,14 @@ public class Vrp {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+
+    public String getUniId() {
+        return uniId;
+    }
+
+    public void setUniId(String uniId) {
+        this.uniId = uniId;
     }
 }

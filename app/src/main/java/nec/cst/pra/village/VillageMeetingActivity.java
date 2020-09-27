@@ -110,6 +110,10 @@ public class VillageMeetingActivity extends AppCompatActivity implements
         EditText ffemalecount = (EditText) findViewById(R.id.ffemalecount);
         CustomFontEditText consentRecived = (CustomFontEditText) findViewById(R.id.consentRecived);
         CustomFontEditText agenda = (CustomFontEditText) findViewById(R.id.agenda);
+        CustomFontEditText resolution1 = (CustomFontEditText) findViewById(R.id.resolution1);
+        CustomFontEditText resolution2 = (CustomFontEditText) findViewById(R.id.resolution2);
+        CustomFontEditText resolution3 = (CustomFontEditText) findViewById(R.id.resolution3);
+        CustomFontEditText resolution4 = (CustomFontEditText) findViewById(R.id.resolution4);
         TextView submit = (TextView) findViewById(R.id.submit);
 
         memberArrayList.add(new ImportantPerson("", "Add Member", "Click to add"));
@@ -147,6 +151,10 @@ public class VillageMeetingActivity extends AppCompatActivity implements
             ffemalecount.setText(villageMeeting.ffemalecount);
             agenda.setText(villageMeeting.agenda);
             consentRecived.setText(villageMeeting.consent);
+            resolution1.setText(villageMeeting.resolution1);
+            resolution2.setText(villageMeeting.resolution2);
+            resolution3.setText(villageMeeting.resolution3);
+            resolution4.setText(villageMeeting.resolution4);
             if (villageMeeting.bases != null && villageMeeting.bases.size() > 0) {
                 baseArrayList = villageMeeting.bases;
                 attachmentBaseAdapter.notifyData(baseArrayList);
@@ -171,8 +179,12 @@ public class VillageMeetingActivity extends AppCompatActivity implements
                         ffemalecount.getText().toString(),
                         agenda.getText().toString(),
                         consentRecived.getText().toString(),
-                        baseArrayList
-                );
+                        baseArrayList,
+                        resolution1.getText().toString(),
+                        resolution2.getText().toString(),
+                        resolution3.getText().toString(),
+                        resolution4.getText().toString()
+                        );
                 if (meetId != null) {
                     villageMeeting.setId(meetId);
                     dbMeet.updatedata(vrpId, "meet", meetId, new Gson().toJson(villageMeeting));

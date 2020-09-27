@@ -8,10 +8,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width ="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.SpinExam.Toolbar">
+
+            <com.magorasystems.materialtoolbarspinner.MaterialToolbarSpinner
+                android:id="@+id/mt_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+        </android.support.v7.widget.Toolbar>
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/toolbar"
             android:layout_marginTop="5dp"
             android:scrollbars="vertical" />
 

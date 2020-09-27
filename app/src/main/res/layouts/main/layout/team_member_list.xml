@@ -22,6 +22,16 @@
             android:orientation="vertical">
 
             <nec.cst.pra.CustomFontTextView
+                android:id="@+id/category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Student"
+                android:textColor="@color/jaguar"
+                android:textSize="14dp"
+                app:fontName="maven" />
+
+            <nec.cst.pra.CustomFontTextView
                 android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

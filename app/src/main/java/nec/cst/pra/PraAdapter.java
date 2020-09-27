@@ -19,8 +19,10 @@ import com.google.android.youtube.player.YouTubePlayer;
 import java.util.List;
 
 import nec.cst.pra.action.MainActivityAllSurveyAction;
+import nec.cst.pra.gpdp.MainActivityGpdp;
 import nec.cst.pra.household.MainActivityAllSurvey;
 import nec.cst.pra.survey.MainActivity;
+import nec.cst.pra.survey.MainActivityAllVillage;
 import nec.cst.pra.village.VillageIntroActivity;
 import nec.cst.pra.village.VillageMeetingActivity;
 import nec.cst.pra.web.MainActivityWeb;
@@ -159,7 +161,6 @@ public class PraAdapter extends RecyclerView.Adapter<PraAdapter.MyViewHolder> {
 
     private void titleClick(Pra pra, MyViewHolder holder) {
 
-
         if (pra.getTitle().equals("UBA Website")) {
             holder.toolsLin.setVisibility(View.GONE);
             Intent io = new Intent(mContext, MainActivityWeb.class);
@@ -191,8 +192,11 @@ public class PraAdapter extends RecyclerView.Adapter<PraAdapter.MyViewHolder> {
         } else if (pra.getTitle().equals("Smart Geo PRA Tools")) {
             Intent io = new Intent(mContext, MainActivityPra.class);
             mContext.startActivity(io);
+        }else if (pra.getTitle().equals("Gram Panchayat Development Plan")) {
+            Intent io = new Intent(mContext, MainActivityGpdp.class);
+            mContext.startActivity(io);
         } else if (pra.getTitle().equals("UBA 2.0 Village Survey")) {
-            Intent io = new Intent(mContext, MainActivity.class);
+            Intent io = new Intent(mContext, MainActivityAllVillage.class);
             mContext.startActivity(io);
         } else if (pra.getTitle().equals("UBA Household survey")) {
             Intent io = new Intent(mContext, MainActivityAllSurvey.class);
@@ -200,8 +204,7 @@ public class PraAdapter extends RecyclerView.Adapter<PraAdapter.MyViewHolder> {
         } else if (pra.getTitle().equals("Plan of Action")) {
             Intent io = new Intent(mContext, MainActivityAllSurveyAction.class);
             mContext.startActivity(io);
-        } else if (pra.getTitle().equals("Gram Panchayat Development Plan")
-                || pra.getTitle().equals("Other Activities")
+        } else if ( pra.getTitle().equals("Other Activities")
                 || pra.getTitle().equals("Financial Aids")) {
             Toast.makeText(mContext, "Coming Soon", Toast.LENGTH_SHORT).show();
         } else if (!pra.getYear().equalsIgnoreCase("true")) {

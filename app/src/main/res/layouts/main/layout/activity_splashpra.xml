@@ -3,7 +3,7 @@
     android:id="@+id/splashScreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/smartpratoolkit"
+    android:background="@drawable/pra"
     android:orientation="vertical">
 
 
@@ -36,7 +36,7 @@
         android:fontFeatureSettings="smcp"
         android:text="Smart Geo PRA for UBA 2.0"
         android:textColor="#fff"
-        android:textSize="25sp"
+        android:textSize="22sp"
         android:textStyle="bold" />
 
     <RelativeLayout

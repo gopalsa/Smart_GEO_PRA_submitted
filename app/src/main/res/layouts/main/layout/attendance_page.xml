@@ -181,9 +181,9 @@
 
                             <EditText
                                 android:id="@+id/fmalecount"
-                                android:layout_width="wrap_content"
+                                android:layout_width="50dp"
                                 android:layout_height="wrap_content"
-                                android:hint=" 10 "
+                                android:hint=""
                                 android:maxLength="4" />
                         </LinearLayout>
 
@@ -202,9 +202,9 @@
 
                             <EditText
                                 android:id="@+id/ffemalecount"
-                                android:layout_width="wrap_content"
+                                android:layout_width="50dp"
                                 android:layout_height="wrap_content"
-                                android:hint=" 10 " />
+                                android:hint="" />
                         </LinearLayout>
 
                     </LinearLayout>
@@ -214,6 +214,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="horizontal">
+
 
                         <ImageView
                             android:layout_width="wrap_content"
@@ -258,9 +259,9 @@
 
                             <EditText
                                 android:id="@+id/pmalecount"
-                                android:layout_width="wrap_content"
+                                android:layout_width="50dp"
                                 android:layout_height="wrap_content"
-                                android:hint=" 10 " />
+                                android:hint="" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -278,9 +279,9 @@
 
                             <EditText
                                 android:id="@+id/pfemalecount"
-                                android:layout_width="wrap_content"
+                                android:layout_width="50dp"
                                 android:layout_height="wrap_content"
-                                android:hint=" 10 " />
+                                android:hint="" />
                         </LinearLayout>
 
                     </LinearLayout>

@@ -244,6 +244,13 @@ Step 2: Observe and Record all information during Informal Exposure Walk.\n\n\n\
     <string name="shelterforLivestock">11.8) Shelter for Livestock</string>
     <string name="averageMilk">11.9) Average Daily Production of Milk(Litres)</string>
     <string name="animalWaste">11.10) Animal Waste/Cow Dung (in Kgs.)</string>
+    <string name="date">date</string>
 
+
+
+    <string name="google">Google Search Your Blocks Village List Name &amp; Paste Link from</string>
+    <string name="googlee"><a href="https://indikosh.com/" target="_top">https://indikosh.com/</a></string>
+    <string name="googleee"><a href="http://census2011.co.in/" target="_top">http://census2011.co.in/</a></string>
+    <string name="googleeee"><a href="https://www.onefivenine.com/" target="_top">https://www.onefivenine.com/</a></string>
 
 </resources>

@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nec.cst.pra.household.CustClusterHouseHoldActivity;
+import nec.cst.pra.survey.ColumnChartActivity;
+import nec.cst.pra.survey.MainActivityAllVillagePrint;
 import nec.cst.pra.survey.PieChartActivity;
 
 public class MainActivity extends AppCompatActivity implements VideoClick {
@@ -53,13 +55,13 @@ public class MainActivity extends AppCompatActivity implements VideoClick {
         pra = new Pra("UBA News & Events", "false", "false", "");
         praList.add(pra);
 
-        pra = new Pra("UBA Photos & Videos", "false", "false", "");
-        praList.add(pra);
+//        pra = new Pra("UBA Photos & Videos", "false", "false", "");
+//        praList.add(pra);
 
         pra = new Pra("UBA 2.0 Project Guidelines", "", "true", "");
         praList.add(pra);
 
-        pra = new Pra("UBA Team Members", "true", "true", "");
+        pra = new Pra("UBA Cell Team Members", "true", "true", "");
         praList.add(pra);
 
         pra = new Pra("UBA Village Secondary Info", "true", "true", "");
@@ -91,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements VideoClick {
 
         pra = new Pra("Financial Aids", "false", "false", "");
         praList.add(pra);
-
 
 
         mAdapter.notifyDataSetChanged();
@@ -159,6 +160,13 @@ public class MainActivity extends AppCompatActivity implements VideoClick {
         editor.commit();
         if (praList.get(position).getTitle().equals("UBA Household survey")) {
             Intent io = new Intent(MainActivity.this, PieChartActivity.class);
+            io.putExtra("tittle", praList.get(position).getTitle());
+            startActivity(io);
+        } else if (praList.get(position).getTitle().equals("UBA Cell Team Members")) {
+            Intent io = new Intent(MainActivity.this, TeamMember.class);
+            startActivity(io);
+        } else if (praList.get(position).getTitle().equals("UBA 2.0 Village Survey")) {
+            Intent io = new Intent(MainActivity.this, MainActivityAllVillagePrint.class);
             io.putExtra("tittle", praList.get(position).getTitle());
             startActivity(io);
         } else {

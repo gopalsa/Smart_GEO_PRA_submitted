@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/parentLinear"
+    tools:context="nec.cst.pra.PanchayatActivity">
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="5dp"
+        android:layout_height="match_parent">
+
+        <nec.cst.pra.CustomFontEditText
+            android:id="@+id/userCreate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="User Create For"
+            app:category="@string/selectable"
+            app:tittle="User Create For"
+            android:textColorHint="#ffc6c6c6"
+            android:backgroundTint="@color/gray"
+            android:textSize="15dp"
+            android:inputType="text"
+            app:choices="district/Block,ZP/BP" />
+    </android.support.design.widget.TextInputLayout>
+
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="5dp"
+        android:layout_height="match_parent">
+
+        <nec.cst.pra.CustomFontEditText
+            android:id="@+id/userLocate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="#ffc6c6c6"
+            android:backgroundTint="@color/gray"
+            android:textSize="15dp"
+            android:inputType="text"
+            android:hint="User Located At"
+            app:category="@string/selectable"
+            app:tittle="User Create For"
+            app:choices="district,Block" />
+    </android.support.design.widget.TextInputLayout>
+
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="5dp"
+        android:layout_height="match_parent">
+
+        <nec.cst.pra.CustomFontEditText
+            android:id="@+id/userType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="User Type"
+            android:textColorHint="#ffc6c6c6"
+            android:backgroundTint="@color/gray"
+            android:textSize="15dp"
+            android:inputType="text"
+            app:category="@string/selectable"
+            app:tittle="User Create For"
+            app:choices="district official,Block official" />
+    </android.support.design.widget.TextInputLayout>
+
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="5dp"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColorHint="#ffc6c6c6"
+            android:backgroundTint="@color/gray"
+            android:textSize="15dp"
+            android:inputType="text"
+            android:hint="Search ( district )  "/>
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/submit"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:background="@color/colorPrimaryDark"
+        android:gravity="center"
+        android:text="Submit"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="20dp"/>
+
+
+</LinearLayout>

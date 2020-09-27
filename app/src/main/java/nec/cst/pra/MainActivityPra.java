@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nec.cst.pra.household.CustClusterHouseHoldActivity;
+import nec.cst.pra.survey.ColumnChartActivity;
 import nec.cst.pra.survey.PieChartActivity;
 
 public class MainActivityPra extends AppCompatActivity implements VideoClick {
@@ -142,7 +143,7 @@ public class MainActivityPra extends AppCompatActivity implements VideoClick {
         editor.putString(tittle, praList.get(position).getTitle());
         editor.commit();
         if (praList.get(position).getTitle().equals("Household survey")) {
-            Intent io = new Intent(MainActivityPra.this, PieChartActivity.class);
+            Intent io = new Intent(MainActivityPra.this, ColumnChartActivity.class);
             io.putExtra("tittle", praList.get(position).getTitle());
             startActivity(io);
         } else {

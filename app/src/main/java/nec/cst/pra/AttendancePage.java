@@ -1,6 +1,9 @@
 package nec.cst.pra;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,10 +14,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView;
@@ -26,7 +31,10 @@ import com.vansuita.pickimage.listeners.IPickResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -41,6 +49,7 @@ import nec.cst.pra.db.DbReport;
 
 public class AttendancePage extends AppCompatActivity {
 
+    private int mYear, mMonth, mDay, mHour, mMinute;
     DbReport dbReport;
     SharedPreferences sharedpreferences;
     public static final String mypreference = "mypref";
@@ -54,6 +63,8 @@ public class AttendancePage extends AppCompatActivity {
     private String imagePath;
     GPSTracker gps;
     DbImage dbImage;
+    EditText date;
+    EditText time;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,8 +87,8 @@ public class AttendancePage extends AppCompatActivity {
         tittletxt.setText(tittleString);
         subtittletxt.setText("Group Picture & Video of " + tittleString + " participants");
 
-        final EditText date = (EditText) findViewById(R.id.date);
-        final EditText time = (EditText) findViewById(R.id.time);
+        date = (EditText) findViewById(R.id.date);
+        time = (EditText) findViewById(R.id.time);
         final EditText fmalecount = (EditText) findViewById(R.id.fmalecount);
         final EditText ffemalecount = (EditText) findViewById(R.id.ffemalecount);
         final EditText pmalecount = (EditText) findViewById(R.id.pmalecount);
@@ -93,9 +104,14 @@ public class AttendancePage extends AppCompatActivity {
                 ffemalecount.setText(attendanceObject.getString("ffemalecount"));
                 pmalecount.setText(attendanceObject.getString("pmalecount"));
                 pfemalecount.setText(attendanceObject.getString("pfemalecount"));
+            } else {
+                pickDate(AttendancePage.this);
+                pickTime(AttendancePage.this);
             }
         } catch (Exception e) {
             Log.d("Attendance ", e.toString());
+            pickDate(AttendancePage.this);
+            pickTime(AttendancePage.this);
         }
 
         processadopted.setText(getResources().getString(AppConfig.getProcess(tittleString)));
@@ -131,7 +147,6 @@ public class AttendancePage extends AppCompatActivity {
         });
 
 
-
         ImageView addimage = (ImageView) findViewById(R.id.addimg);
         addimage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,7 +162,7 @@ public class AttendancePage extends AppCompatActivity {
         mRecyclerViewhistory.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), mRecyclerViewhistory, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, final int position) {
-                addImage(position, historyList.get(position).getTag(), "Update images");
+                optionPicker(position,AttendancePage.this);
             }
 
             @Override
@@ -157,6 +172,7 @@ public class AttendancePage extends AppCompatActivity {
         }));
         prepareData();
     }
+
     private void prepareData() {
         historyList = new ArrayList<>();
         List<String> history = dbImage.getAllData(vrpString, tittleString, getResources().getString(R.string.attendance));
@@ -312,6 +328,47 @@ public class AttendancePage extends AppCompatActivity {
             gps.showSettingsAlert();
         }
         b.show();
+    }
+
+    public void pickDate(Context context) {
+        SimpleDateFormat sdf1 = new SimpleDateFormat("dd.MM.yy");
+        date.setText(sdf1.format(new Date()));     //30.06.09
+
+    }
+
+    private void pickTime(Context context) {
+        SimpleDateFormat sdf5 = new SimpleDateFormat("h:mm");
+        time.setText(sdf5.format(new Date()));     //8:29
+
+
+    }
+
+
+    public void optionPicker(final int position, final Context context) {
+
+        final CharSequence[] items;
+
+        items = new CharSequence[2];
+        items[0] = "View";
+        items[1] = "Edit";
+
+
+        android.app.AlertDialog.Builder alertdialog = new android.app.AlertDialog.Builder(context);
+        alertdialog.setTitle("Select");
+        alertdialog.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                if (items[item].equals("View")) {
+                    Intent localIntent = new Intent(context, AttachementOffline.class);
+                    localIntent.putExtra("filePath", historyList.get(position).getPlotimage());
+                    startActivity(localIntent);
+                } else if (items[item].equals("Edit")) {
+                    addImage(position, historyList.get(position).getTag(), "Update images");
+
+                }
+            }
+        });
+        alertdialog.show();
     }
 
 }

@@ -1,12 +1,19 @@
 package nec.cst.pra;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -14,28 +21,50 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.vansuita.pickimage.bean.PickResult;
 import com.vansuita.pickimage.bundle.PickSetup;
 import com.vansuita.pickimage.dialog.PickImageDialog;
 import com.vansuita.pickimage.listeners.IPickResult;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import nec.cst.pra.app.AppConfig;
+import nec.cst.pra.app.AppController;
 import nec.cst.pra.app.GlideApp;
+import nec.cst.pra.app.HeaderFooterPageEvent;
 import nec.cst.pra.db.DbMember;
 import nec.cst.pra.db.DbVrp;
+import nec.cst.pra.survey.Survey;
 
 /**
  * Created by Gopal on 18-11-2017.
@@ -58,12 +87,18 @@ public class TeamMember extends AppCompatActivity {
     private Vrp vrp;
     GPSTracker gps;
 
+
+    ProgressDialog pDialog;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.team_member);
         getSupportActionBar().setTitle("UBA Team members");
         gps = new GPSTracker(TeamMember.this);
+
+        pDialog = new ProgressDialog(this);
+        pDialog.setCancelable(false);
 
         dbMember = new DbMember(this);
         dbVrp = new DbVrp(this);
@@ -78,14 +113,14 @@ public class TeamMember extends AppCompatActivity {
         emptylayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showMemberDialog(-1, "", "Add team member");
+                showMemberDialog(-1, "", "Add team member", null);
             }
         });
         TextView submittxt = (TextView) findViewById(R.id.r_submittxt);
         submittxt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showMemberDialog(-1, "", "Add team member");
+                showMemberDialog(-1, "", "Add team member", null);
             }
         });
 
@@ -108,7 +143,7 @@ public class TeamMember extends AppCompatActivity {
                 builder.setItems(items, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
                         if (item == 0) {
-                            showMemberDialog(position, memberList.get(position).getName(), "Update team member");
+                            showMemberDialog(position, memberList.get(position).getName(), "Update team member", memberList.get(position));
                         } else if (item == 1) {
                             dbMember.deleteData(vrpId, memberList.get(position).getName(),
                                     memberList.get(position).getName(), "");
@@ -124,11 +159,14 @@ public class TeamMember extends AppCompatActivity {
 
             }
         }));
-        prepareData();
+
+
+        getAllData();
+
+
     }
 
-
-    public void showMemberDialog(final int position, final String conatct, String tittle) {
+    public void showMemberDialog(final int position, final String conatct, String tittle, Member memberVal) {
         imagePath = "";
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(TeamMember.this);
         LayoutInflater inflater = TeamMember.this.getLayoutInflater();
@@ -161,11 +199,7 @@ public class TeamMember extends AppCompatActivity {
         final CustomFontTextView itemtittle = (CustomFontTextView) dialogView.findViewById(R.id.itemtittle);
         itemtittle.setText(tittle);
         if (position != -1) {
-            ArrayList<String> data = dbMember.getData(vrpId, "member", conatct);
-            JsonParser parser = new JsonParser();
-            JsonObject o = parser.parse(data.get(3)).getAsJsonObject();
-            Member member = new Gson()
-                    .fromJson(o, Member.class);
+            Member member = memberVal;
             name.setText(member.getName());
             designation.setText(member.getDesignation());
             designationinpra.setText(member.getDesignationinpra());
@@ -212,8 +246,7 @@ public class TeamMember extends AppCompatActivity {
                     if (position == -1) {
                         memberList.add(member);
                         mAdapter.notifyData(memberList);
-                        dbMember.addData(vrpId, "member", name.getText().toString(), new Gson().toJson(member));
-                        b.cancel();
+                         b.cancel();
                         emptylayout.setVisibility(View.GONE);
                         recyclerView.setVisibility(View.VISIBLE);
                     } else {
@@ -226,8 +259,7 @@ public class TeamMember extends AppCompatActivity {
                         memberList.get(position).setExperience(member.getExperience());
                         memberList.get(position).setSocialmedia(member.getSocialmedia());
                         memberList.get(position).setImage(member.getImage());
-                        dbMember.updatedata(vrpId, "member", conatct
-                                , name.getText().toString(), new Gson().toJson(member));
+
                         mAdapter.notifyData(memberList);
                         b.cancel();
                     }
@@ -293,7 +325,7 @@ public class TeamMember extends AppCompatActivity {
             }
         });
         // check if GPS enabled
-        if (position==-1&&gps.canGetLocation()) {
+        if (position == -1 && gps.canGetLocation()) {
             gps = new GPSTracker(TeamMember.this);
             double latitude = gps.getLatitude();
             double longitude = gps.getLongitude();
@@ -349,5 +381,162 @@ public class TeamMember extends AppCompatActivity {
         mAdapter.notifyData(memberList);
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_print, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.print) {
+            StringBuilder printLists = new StringBuilder();
+            for (int i = 0; i < memberList.size(); i++) {
+                printLists.append("Member " + String.valueOf(i + 1) + "\n");
+                printLists.append(memberList.get(i).toString());
+            }
+            printFunction(printLists.toString());
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void printFunction(String strings) {
+
+        try {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/PDF";
+            File dir = new File(path);
+            if (!dir.exists())
+                dir.mkdirs();
+            Log.d("PDFCreator", "PDF Path: " + path);
+            File file = new File(dir, "demo" + ".pdf");
+            FileOutputStream fOut = new FileOutputStream(file);
+            Document document = new Document();
+            PdfWriter pdfWriter = PdfWriter.getInstance(document, fOut);
+            Rectangle rect = new Rectangle(175, 20, 530, 800);
+            pdfWriter.setBoxSize("art", rect);
+
+            Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.cst_pdf);
+            Bitmap bu = BitmapFactory.decodeResource(getResources(), R.drawable.bu_logo);
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            icon.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+
+            ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
+            bu.compress(Bitmap.CompressFormat.PNG, 100, stream1);
+            byte[] byteArray1 = stream1.toByteArray();
+
+            HeaderFooterPageEvent event = new HeaderFooterPageEvent(Image.getInstance(byteArray), Image.getInstance(byteArray1));
+            pdfWriter.setPageEvent(event);
+
+            document.open();
+            AppConfig.addMetaData(document);
+            // AppConfig.addTitlePage(document);
+            AppConfig.addToolReport(document, strings);
+            document.close();
+
+
+        } catch (Error | Exception e) {
+            e.printStackTrace();
+        }
+
+        Uri photoURI = FileProvider.getUriForFile(getApplicationContext(),
+                getApplicationContext().getPackageName() + AppConfig.packageName + ".provider",
+                new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/PDF/" + "demo" + ".pdf"));
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(photoURI
+                , "application/pdf");
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(intent);
+
+    }
+
+    private void hideDialog() {
+
+        if (this.pDialog.isShowing()) this.pDialog.dismiss();
+    }
+
+    private void showDialog() {
+
+        if (!this.pDialog.isShowing()) this.pDialog.show();
+    }
+
+
+    private void getAllData() {
+        String tag_string_req = "req_register";
+        pDialog.setMessage("Validating ...");
+        showDialog();
+        // showDialog();
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                AppConfig.URL_UNI_VRP, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("Register Response: ", response.toString());
+                try {
+                    JSONObject jObj = new JSONObject(response);
+                    boolean error = jObj.getBoolean("error");
+                    if (!error) {
+                        JSONArray dataJsonArray = jObj.getJSONArray("datas");
+                        memberList = new ArrayList<>();
+                        for (int i = 0; i < dataJsonArray.length(); i++) {
+                            JSONObject dataObject = dataJsonArray.getJSONObject(i);
+                            Vrp vrp1 = new Gson().fromJson(dataObject.getString("data"), Vrp.class);
+                            if (vrp1 != null) {
+                                Member member = new Member(vrp1.image,
+                                        vrp1.name,
+                                        "",
+                                        "",
+                                        vrp1.address,
+                                        vrp1.geotag,
+                                        "",
+                                        vrp1.contact,
+                                        "",
+                                        "",
+                                        "");
+                                member.setCategory(vrp1.category);
+                                memberList.add(member);
+                            }
+
+                        }
+                        mAdapter.notifyData(memberList);
+                        emptylayout.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.VISIBLE);
+                    }
+                } catch (Exception e) {
+                    Log.e("xxxxxxxxxxx", e.toString());
+                }
+                hideDialog();
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Toast.makeText(getApplicationContext(),
+                        "Some Network Error.Try after some time", Toast.LENGTH_LONG).show();
+                hideDialog();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                HashMap localHashMap = new HashMap();
+                localHashMap.put("key", "vrp");
+                localHashMap.put("name", vrp.institution);
+                return localHashMap;
+            }
+        };
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+    }
 
 }

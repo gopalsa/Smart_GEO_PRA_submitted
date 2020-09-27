@@ -6,6 +6,9 @@ public class SurveyItem {
     public String question;
     public String field;
     public boolean isGraph;
+    public boolean isYesNo;
+    public String options;
+
 
     public String getQuestion() {
         return question;
@@ -32,6 +35,36 @@ public class SurveyItem {
         this.question = question;
         this.field = field;
         this.isGraph = isGraph;
+    }
+
+    public SurveyItem(String question, String field, boolean isGraph, boolean isYesNo) {
+        this.question = question;
+        this.field = field;
+        this.isGraph = isGraph;
+        this.isYesNo = isYesNo;
+    }
+
+    public SurveyItem(String question, String field, boolean isGraph, String options) {
+        this.question = question;
+        this.field = field;
+        this.isGraph = isGraph;
+        this.options = options;
+    }
+
+    public boolean isYesNo() {
+        return isYesNo;
+    }
+
+    public void setYesNo(boolean yesNo) {
+        isYesNo = yesNo;
+    }
+
+    public String getOptions() {
+        return options;
+    }
+
+    public void setOptions(String options) {
+        this.options = options;
     }
 
     public boolean isGraph() {

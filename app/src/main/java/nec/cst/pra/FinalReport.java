@@ -1,24 +1,44 @@
 package nec.cst.pra;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.takusemba.multisnaprecyclerview.MultiSnapRecyclerView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import nec.cst.pra.app.AppConfig;
+import nec.cst.pra.app.HeaderFooterPageEvent;
 import nec.cst.pra.db.DbImage;
 import nec.cst.pra.db.DbReport;
+import nec.cst.pra.survey.PrintSurveyItem;
 
 /**
  * Created by Gopal on 18-11-2017.
@@ -38,6 +58,10 @@ public class FinalReport extends AppCompatActivity {
     private ProfileAdapter mRecyclerAdapterhistory;
     private ArrayList<Plot> historyList = new ArrayList<>();
 
+    TextView toolreport;
+    TextView additionalinfo;
+    TextView observation;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,9 +75,9 @@ public class FinalReport extends AppCompatActivity {
             vrpString = sharedpreferences.getString(vrpid, "").trim();
         }
         getSupportActionBar().setTitle(tittleString);
-        TextView toolreport = (TextView) findViewById(R.id.toolreport);
-        TextView additionalinfo = (TextView) findViewById(R.id.additionalinfo);
-        TextView observation = (TextView) findViewById(R.id.observation);
+        toolreport = (TextView) findViewById(R.id.toolreport);
+        additionalinfo = (TextView) findViewById(R.id.additionalinfo);
+        observation = (TextView) findViewById(R.id.observation);
 
         final TextView date = (TextView) findViewById(R.id.date);
         final TextView time = (TextView) findViewById(R.id.time);
@@ -103,6 +127,17 @@ public class FinalReport extends AppCompatActivity {
         final LinearLayoutManager thirdManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         mRecyclerViewhistory.setLayoutManager(thirdManager);
         mRecyclerViewhistory.setAdapter(mRecyclerAdapterhistory);
+        mRecyclerViewhistory.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), mRecyclerViewhistory, new RecyclerTouchListener.ClickListener() {
+            @Override
+            public void onClick(View view, final int position) {
+                optionPicker(position,FinalReport.this);
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
         prepareData();
     }
 
@@ -123,4 +158,107 @@ public class FinalReport extends AppCompatActivity {
         mRecyclerAdapterhistory.notifyData(historyList);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_print, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.print) {
+            StringBuilder printLists = new StringBuilder();
+            printLists.append("Tool Report\n");
+            if (toolreport.getText().toString() != null &&
+                    toolreport.getText().toString().length() > 0) {
+                printLists.append(toolreport.getText().toString()+"\n");
+            } else {
+                printLists.append("Tool Report shown here...\n");
+            }
+            printLists.append("Additional Information\n");
+            if (additionalinfo.getText().toString() != null &&
+                    additionalinfo.getText().toString().length() > 0) {
+                printLists.append(additionalinfo.getText().toString()+"\n");
+            } else {
+                printLists.append("Additional Information shown here...\n");
+            }
+            printLists.append("Observation\n");
+            if (observation.getText().toString() != null &&
+                    observation.getText().toString().length() > 0) {
+                printLists.append(observation.getText().toString()+"\n");
+            } else {
+                printLists.append("Observation shown here...\n");
+            }
+            printFunction(printLists.toString());
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void printFunction(String strings) {
+
+        try {
+            String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/PDF";
+            File dir = new File(path);
+            if (!dir.exists())
+                dir.mkdirs();
+            Log.d("PDFCreator", "PDF Path: " + path);
+            File file = new File(dir, "demo" + ".pdf");
+            FileOutputStream fOut = new FileOutputStream(file);
+            Document document = new Document();
+            PdfWriter pdfWriter = PdfWriter.getInstance(document, fOut);
+            Rectangle rect = new Rectangle(175, 20, 530, 800);
+            pdfWriter.setBoxSize("art", rect);
+
+            Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.cst_pdf);
+            Bitmap bu = BitmapFactory.decodeResource(getResources(), R.drawable.bu_logo);
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            icon.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            byte[] byteArray = stream.toByteArray();
+
+            ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
+            bu.compress(Bitmap.CompressFormat.PNG, 100, stream1);
+            byte[] byteArray1 = stream1.toByteArray();
+
+            HeaderFooterPageEvent event = new HeaderFooterPageEvent(Image.getInstance(byteArray), Image.getInstance(byteArray1));
+            pdfWriter.setPageEvent(event);
+
+            document.open();
+            AppConfig.addMetaData(document);
+            // AppConfig.addTitlePage(document);
+            AppConfig.addToolReport(document, strings);
+            document.close();
+
+
+        } catch (Error | Exception e) {
+            e.printStackTrace();
+        }
+
+        Uri photoURI = FileProvider.getUriForFile(getApplicationContext(),
+                getApplicationContext().getPackageName() + AppConfig.packageName+".provider",
+                new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/PDF/" + "demo" + ".pdf"));
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(photoURI
+                , "application/pdf");
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(intent);
+
+    }
+
+    public void optionPicker(final int position, final Context context) {
+
+        Intent localIntent = new Intent(context, AttachementOffline.class);
+        localIntent.putExtra("filePath", historyList.get(position).getPlotimage());
+        startActivity(localIntent);
+    }
 }

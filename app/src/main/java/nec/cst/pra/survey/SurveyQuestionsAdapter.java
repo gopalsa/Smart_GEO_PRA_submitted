@@ -58,8 +58,8 @@ public class SurveyQuestionsAdapter extends RecyclerView.Adapter<SurveyQuestions
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         SurveyItem bean = moviesList.get(position);
-        //holder.question.setTitle(bean.question.substring(0, bean.question.indexOf(" ")));
-        holder.question.setTitle(String.valueOf(position + 1));
+        holder.question.setTitle(bean.question.substring(0, bean.question.indexOf(" ")-1));
+       // holder.question.setTitle(String.valueOf(position + 1));
 
         holder.question.setOnClickListener(new View.OnClickListener() {
             @Override

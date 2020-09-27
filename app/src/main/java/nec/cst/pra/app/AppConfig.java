@@ -4,8 +4,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -31,6 +33,8 @@ import nec.cst.pra.survey.PrintSurveyItem;
 import nec.cst.pra.survey.Survey;
 
 public class AppConfig {
+
+    public static String packageName = ".nec.cst.pra";
 
     private static Font catFont = new Font(Font.FontFamily.HELVETICA, 14,
             Font.BOLD);
@@ -59,10 +63,21 @@ public class AppConfig {
     // Server user login url
     public static String URL_REGISTER = "http://" + ipcloud + "/create_vrp.php";
     public static String URL_LOGIN = "http://" + ipcloud + "/get_vrp_login.php";
+    public static String URL_ALL_UNI = "http://" + ipcloud + "/get_all_uni.php";
+    public static String URL_UNI_DETAIL = "http://" + ipcloud + "/get_uni_details.php";
+    public static String URL_UNI_DETAIL_NAME = "http://" + ipcloud + "/get_uni_details_name.php";
+
+    //Farmer details
+    public static String URL_CREATE_DAtA = "http://" + ipcloud + "/create_data.php";
+    public static String URL_GET_DATA = "http://" + ipcloud + "/get_all_data.php";
+    public static String URL_UNI_VRP = "http://" + ipcloud + "/get_uni_vrp.php";
+
+
     public static String URL_UPDATE = "http://" + ipcloud + "/update_vrp.php";
     public static String URL_CREATE_NEW_VRP = "http://" + ipcloud + "/create_new_vrp.php";
     public static String URL_FARMER_DETAIL = "http://" + ipcloud + "/get_vrp_details.php";
 
+    public static String URL_GET_ALL_SHEET = "http://" + ipcloud + "/get_all_datasheet.php";
     public static String URL_ALL_PROFILE = "http://" + ipcloud + "/get_all_profile.php";
     public static String URL_PROFILE_CREATE = "http://" + ipcloud + "/create_profile.php";
     public static String URL_PROFILE_UPDATE = "http://" + ipcloud + "/update_profile.php";
@@ -70,6 +85,7 @@ public class AppConfig {
     public static String URL_CREATE_SURVEY = "http://" + ipcloud + "/data/create_survey.php";
     public static String URL_CREATE_OFFLINE_SURVEY = "http://" + ipcloud + "/data/create_offline_survey.php";
     public static String URL_GET_All_SURVEY = "http://" + ipcloudUBA + "/survey/get_all_uba_report.php";
+    public static String URL_GET_All_NEC_SURVEY = "http://coconutfpo.smartfpo.com/AMBank/get_all_uba.php";
     public static String URL_GET_USER_SURVEY = "http://" + ipcloudUBA + "/data/get_user_survey_report.php";
 
     // server URL configuration
@@ -77,6 +93,9 @@ public class AppConfig {
     public static final String URL_VERIFY_OTP = "http://" + ipcloud + "/verify_otp.php";
     public static String URL_CREATE_SURVEYANS = "http://" + ipcloudUBA + "/survey/create_uba_ans.php";
     public static String URL_GET_All_SURVEYANS = "http://" + ipcloudUBA + "/survey/get_all_uba_ans.php";
+
+
+    public static String URL_FORGOT_PASSWORD = "http://" + ipcloud + "/get_forgot_mail.php";
 
     // SMS provider identification
     // It should match with your SMS gateway origin
@@ -214,59 +233,84 @@ public class AppConfig {
 
     private static void addEmptyLine(Paragraph paragraph, int number) {
         for (int i = 0; i < number; i++) {
-            paragraph.add(new Paragraph(" "));
+            paragraph.add(new Paragraph(""));
         }
     }
 
     public static ArrayList<SurveyItem> loadHouseQuestions(Context context) {
         ArrayList<SurveyItem> surveyItems = new ArrayList<>();
 
-        surveyItems.add(new SurveyItem("student", "studentid", false));
-        surveyItems.add(new SurveyItem("village", "village", false));
-        surveyItems.add(new SurveyItem("Ward No", "wardNo", false));
-        surveyItems.add(new SurveyItem("District", "district", false));
-        surveyItems.add(new SurveyItem("Gram Panchayat", "gramPanchayat", false));
-        surveyItems.add(new SurveyItem("Block", "block", false));
-        surveyItems.add(new SurveyItem("State", "state", false));
-        surveyItems.add(new SurveyItem("Name", "name", false));
-        surveyItems.add(new SurveyItem("Gender", "gender", false));
-        surveyItems.add(new SurveyItem("Age", "age", false));
-        surveyItems.add(new SurveyItem("Household", "household", false));
-        surveyItems.add(new SurveyItem("Contact No", "contactNo", false));
-        surveyItems.add(new SurveyItem("Id Card Type", "idCardType", false));
-        surveyItems.add(new SurveyItem("Id Card No", "idCardNo", false));
-        surveyItems.add(new SurveyItem("Household Id", "householdId", false));
-        surveyItems.add(new SurveyItem("Name Of head", "nameOfhead", false));
-        surveyItems.add(new SurveyItem("House Gender", "houseGender", false));
-        surveyItems.add(new SurveyItem("Category", "category", false));
-        surveyItems.add(new SurveyItem("Poverty Status", "povertyStatus", false));
-        surveyItems.add(new SurveyItem("Own House", "ownHouse", false));
-        surveyItems.add(new SurveyItem("Type Of House", "typeOfHouse", false));
-        surveyItems.add(new SurveyItem("Toilet", "toilet", false));
-        surveyItems.add(new SurveyItem("Drainage", "drainage", false));
-        surveyItems.add(new SurveyItem("Waste System", "wasteSystem", false));
-        surveyItems.add(new SurveyItem("CompostPit", "compostPit", false));
-        surveyItems.add(new SurveyItem("Biogas Plant", "biogasPlant", false));
-        surveyItems.add(new SurveyItem("Annual InCome", "annualInncom", false));
-        surveyItems.add(new SurveyItem("Migrate Work", "migrateWork", false));
-        surveyItems.add(new SurveyItem("Family Migrat", "familyMigrat", false));
-        surveyItems.add(new SurveyItem("Migrate days", "migratedays", false));
-        surveyItems.add(new SurveyItem("Migrate Place", "migratePlace", false));
-        surveyItems.add(new SurveyItem("Elect Household", "electHousehold", false));
-        surveyItems.add(new SurveyItem("Elect Day", "electDay", false));
-        surveyItems.add(new SurveyItem("Elect Light", "electLight", false));
-        surveyItems.add(new SurveyItem("Elect Cooking", "electCooking", false));
-        surveyItems.add(new SurveyItem("Elect Cullah", "electCullah", false));
-        surveyItems.add(new SurveyItem("Total", "total", false));
-        surveyItems.add(new SurveyItem("Cultivable Area", "cultivableArea", false));
-        surveyItems.add(new SurveyItem("Irrigated Area", "irrigatedArea", false));
-        surveyItems.add(new SurveyItem("Un Irrigated", "unIrrigated", false));
-        surveyItems.add(new SurveyItem("Barran", "barran", false));
-        surveyItems.add(new SurveyItem("UnCultivate Area", "unCultArea", false));
-        surveyItems.add(new SurveyItem("Irrigation", "irrigation", false));
-        surveyItems.add(new SurveyItem("IrrSystem", "irrSystem", false));
-        surveyItems.add(new SurveyItem("Sign", "sign", false));
-        surveyItems.add(new SurveyItem("Survey", "survey", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.name), "name", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.gender), "age", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.age), "age", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.household), "household", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.contactNo), "contactNo", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.idCardType), "idCardType", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.idCardNo), "idCardNo", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.householdId), "householdId", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.nameOfhead), "nameOfhead", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.houseGender), "houseGender", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.category), "category", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.povertyStatus), "povertyStatus", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.ownHouse), "ownHouse", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.typeOfHouse), "typeOfHouse", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.toilet), "toilet", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.drainage), "drainage", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.wasteSystem), "wasteSystem", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.compostPit), "compostPit", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.biogasPlant), "biogasPlant", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.annualInncom), "annualInncom", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.migrateWork), "migrateWork", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.pmJan), "pmJan", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.pmUjjwala), "pmUjjwala", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.pmAwas), "pmAwas", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.sukanya), "sukanya", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.mudra), "mudra", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.pmJivan), "pmJivan", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.pmSuraksha), "pmSuraksha", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.atal), "atal", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.fasal), "fasal", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.kaushal), "kaushal", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.krishi), "krishi", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.janAushadi), "janAushadi", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.swachh), "swachh", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.soilHealth), "soilHealth", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.ladli), "ladli", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.janani), "janani", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.kisan), "kisan", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.pipedWater), "pipedWater", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.communityWater), "communityWater", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.handPump), "handPump", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.openWell), "openWell", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.modeWaterStorage), "modeWaterStorage", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.anyOtherSource), "anyOtherSource", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.electHousehold), "electHousehold", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.electDay), "electDay", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.electLight), "electLight", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.electCooking), "electCooking", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.electCullah), "electCullah", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.cultivableArea), "cultivableArea", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.irrigatedArea), "irrigatedArea", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.unIrrigated), "unIrrigated", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.barran), "barran", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.unCultArea), "unCultArea", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.chemicalFertilisers), "chemicalFertilisers", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.chemicalInsecticides), "chemicalInsecticides", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.weedicide), "weedicide", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.manures), "manures", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.irrigation), "irrigation", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.irrigationSystem), "irrigationSystem", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.cows), "cows", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.Buffalo), "Buffalo", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.goatsSheep), "goatsSheep", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.calves), "calves", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.bullocks), "bullocks", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.poultryDucks), "poultryDucks", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.liveStockOthers), "liveStockOthers", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.shelterforLivestock), "shelterforLivestock", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.averageMilk), "averageMilk", false));
+        surveyItems.add(new SurveyItem(context.getResources().getString(R.string.animalWaste), "animalWaste", false));
+
         return surveyItems;
 
     }
@@ -316,7 +360,6 @@ public class AppConfig {
     }
 
 
-
     public static Bitmap getBitmapFromView(View view, int totalHeight, int totalWidth) {
 
         Bitmap returnedBitmap = Bitmap.createBitmap(totalWidth, totalHeight, Bitmap.Config.ARGB_8888);
@@ -329,7 +372,6 @@ public class AppConfig {
         view.draw(canvas);
         return returnedBitmap;
     }
-
 
 
     public static void addContent(Document document, PrintSurveyItem[] printSurveyItems) throws Exception {
@@ -356,7 +398,7 @@ public class AppConfig {
                 table1.addCell(createTextCell(printSurveyItems[i].getQuestion(),
                         catFont));
                 table1.addCell(createImageCell(convertBmp));
-                table1.addCell(createTextCell(printSurveyItems[i].getSubtitle().replaceAll("\n", " "),
+                table1.addCell(createTextCell(printSurveyItems[i].getSubtitle().replaceAll("\n", ""),
                         responseFont));
 
                 table1.addCell(createTextCell("Relevance",
@@ -391,4 +433,22 @@ public class AppConfig {
 
     }
 
+    public static void addToolReport(Document document, String strings) throws Exception {
+
+        PdfPTable table1 = new PdfPTable(1);
+        table1.setWidthPercentage(100);
+        table1.setWidths(new int[]{1});
+        table1.addCell(createTextCell(strings,
+                subFont));
+        table1.setKeepTogether(true);
+        document.add(table1);
+    }
+
+
+    private Bitmap convertImageViewToBitmap(ImageView v) {
+
+        Bitmap bm = ((BitmapDrawable) v.getDrawable()).getBitmap();
+
+        return bm;
+    }
 }

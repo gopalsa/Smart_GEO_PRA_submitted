@@ -16,8 +16,12 @@ public class VillageMeeting {
     String agenda;
     String consent;
     ArrayList<Base> bases;
+    String resolution1;
+    String resolution2;
+    String resolution3;
+    String resolution4;
 
-    public VillageMeeting(String id, String villageGeo, String reference, ArrayList<ImportantPerson> importantPeoples, String date, String time, String pmalecount, String pfemalecount, String fmalecount, String ffemalecount, String agenda, String consent, ArrayList<Base> bases) {
+    public VillageMeeting(String id, String villageGeo, String reference, ArrayList<ImportantPerson> importantPeoples, String date, String time, String pmalecount, String pfemalecount, String fmalecount, String ffemalecount, String agenda, String consent, ArrayList<Base> bases, String resolution1, String resolution2, String resolution3, String resolution4) {
         this.id = id;
         this.villageGeo = villageGeo;
         this.reference = reference;
@@ -31,9 +35,13 @@ public class VillageMeeting {
         this.agenda = agenda;
         this.consent = consent;
         this.bases = bases;
+        this.resolution1 = resolution1;
+        this.resolution2 = resolution2;
+        this.resolution3 = resolution3;
+        this.resolution4 = resolution4;
     }
 
-    public VillageMeeting(String villageGeo, String reference, ArrayList<ImportantPerson> importantPeoples, String date, String time, String pmalecount, String pfemalecount, String fmalecount, String ffemalecount, String agenda, String consent, ArrayList<Base> bases) {
+    public VillageMeeting(String villageGeo, String reference, ArrayList<ImportantPerson> importantPeoples, String date, String time, String pmalecount, String pfemalecount, String fmalecount, String ffemalecount, String agenda, String consent, ArrayList<Base> bases, String resolution1, String resolution2, String resolution3, String resolution4) {
         this.villageGeo = villageGeo;
         this.reference = reference;
         this.importantPeoples = importantPeoples;
@@ -46,6 +54,10 @@ public class VillageMeeting {
         this.agenda = agenda;
         this.consent = consent;
         this.bases = bases;
+        this.resolution1 = resolution1;
+        this.resolution2 = resolution2;
+        this.resolution3 = resolution3;
+        this.resolution4 = resolution4;
     }
 
     public String getId() {

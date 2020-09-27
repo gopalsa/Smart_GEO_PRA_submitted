@@ -11,10 +11,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -54,12 +57,15 @@ import nec.cst.pra.app.AppController;
 import nec.cst.pra.db.DbMeet;
 import nec.cst.pra.db.DbProfile;
 import nec.cst.pra.db.DbVrp;
+import nec.cst.pra.household.SurveyItem;
+import nec.cst.pra.survey.SurveyItemClick;
+import nec.cst.pra.survey.SurveyQuestionsAdapter;
 
 /**
  * Created by vidhushi.g on 8/10/17.
  */
 
-public class VillageIntroActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class VillageIntroActivity extends AppCompatActivity implements OnMapReadyCallback, SurveyItemClick {
     DbVrp dbVrp;
     DbProfile dbProfile;
     SharedPreferences sharedpreferences;
@@ -69,6 +75,10 @@ public class VillageIntroActivity extends AppCompatActivity implements OnMapRead
     public static final String tittle = "tittleKey";
     public static final String villageIntro = "villageIntroKey";
     public static final String villageReference = "villageReferenceKey";
+    public static final String villageReference1 = "villageReference1Key";
+    public static final String villageReference2 = "villageReference2Key";
+    public static final String villageReference3 = "villageReference3Key";
+    public static final String villageReference4 = "villageReference4Key";
     String vrpId = "";
     private Vrp vrp;
     private ProgressDialog pDialog;
@@ -77,11 +87,19 @@ public class VillageIntroActivity extends AppCompatActivity implements OnMapRead
     GPSTracker gps;
     DbMeet dbMeet;
     EditText reference;
+    int lastPosition = -1;
+
+    private VillageInfoAdapter mRecyclerAdapterMaster;
+    private RecyclerView mastersList;
+    ArrayList<SurveyItem> surveyItems = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_village_intro);
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
         dbVrp = new DbVrp(this);
         dbProfile = new DbProfile(this);
         sharedpreferences = getSharedPreferences(mypreference,
@@ -89,6 +107,11 @@ public class VillageIntroActivity extends AppCompatActivity implements OnMapRead
         if (sharedpreferences.contains(vrpid)) {
             vrpId = sharedpreferences.getString(vrpid, "").trim();
         }
+        reference = (EditText) findViewById(R.id.referenceGp1);
+        if (sharedpreferences.contains(villageReference)) {
+            reference.setText(sharedpreferences.getString(villageReference, "").trim());
+        }
+
         gps = new GPSTracker(VillageIntroActivity.this);
         dbMeet = new DbMeet(this);
 
@@ -102,7 +125,6 @@ public class VillageIntroActivity extends AppCompatActivity implements OnMapRead
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         ImageView refresh = (ImageView) findViewById(R.id.refresh);
-        reference = (EditText) findViewById(R.id.referenceGp1);
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,18 +136,40 @@ public class VillageIntroActivity extends AppCompatActivity implements OnMapRead
             }
         });
 
+        surveyItems = new ArrayList<>();
+        surveyItems.add(new SurveyItem("GP_1", null));
+        surveyItems.add(new SurveyItem("GP_2", null));
+        surveyItems.add(new SurveyItem("GP_3", null));
+        surveyItems.add(new SurveyItem("GP_4", null));
+        surveyItems.add(new SurveyItem("GP_5", null));
+        mastersList = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerAdapterMaster = new VillageInfoAdapter(this, surveyItems, this);
+        final LinearLayoutManager thirdManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        mastersList.setLayoutManager(thirdManager);
+        mastersList.setAdapter(mRecyclerAdapterMaster);
+
+
         TextView submit = (TextView) findViewById(R.id.submit);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 SharedPreferences.Editor editor = sharedpreferences.edit();
                 editor.putString(villageIntro, imagePath);
-                editor.putString(villageReference, reference.getText().toString());
+                if (lastPosition == 0) {
+                    editor.putString(villageReference, reference.getText().toString());
+                } else if (lastPosition == 1) {
+                    editor.putString(villageReference1, reference.getText().toString());
+                } else if (lastPosition == 2) {
+                    editor.putString(villageReference2, reference.getText().toString());
+                } else if (lastPosition == 3) {
+                    editor.putString(villageReference3, reference.getText().toString());
+                } else if (lastPosition == 4) {
+                    editor.putString(villageReference4, reference.getText().toString());
+                }
                 editor.commit();
-                Intent io = new Intent(VillageIntroActivity.this,
-                        VillageMeetingActivity.class);
-                startActivity(io);
-                finish();
+
+                //finish();
             }
         });
 
@@ -408,4 +452,36 @@ public class VillageIntroActivity extends AppCompatActivity implements OnMapRead
         return new LatLng(foundLongitude, foundLatitude);
     }
 
+    @Override
+    public void itemClick(int position) {
+        if (lastPosition != -1) {
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            editor.putString(villageIntro, imagePath);
+            if (lastPosition == 0) {
+                editor.putString(villageReference, reference.getText().toString());
+            } else if (lastPosition == 1) {
+                editor.putString(villageReference1, reference.getText().toString());
+            } else if (lastPosition == 2) {
+                editor.putString(villageReference2, reference.getText().toString());
+            } else if (lastPosition == 3) {
+                editor.putString(villageReference3, reference.getText().toString());
+            } else if (lastPosition == 4) {
+                editor.putString(villageReference4, reference.getText().toString());
+            }
+            editor.commit();
+        }
+        lastPosition = position;
+
+        if (position == 0 && sharedpreferences.contains(villageReference)) {
+            reference.setText(sharedpreferences.getString(villageReference, "").trim());
+        }else if (position == 1 && sharedpreferences.contains(villageReference1)) {
+            reference.setText(sharedpreferences.getString(villageReference1, "").trim());
+        }else if (position == 2 && sharedpreferences.contains(villageReference2)) {
+            reference.setText(sharedpreferences.getString(villageReference2, "").trim());
+        }else if (position == 3 && sharedpreferences.contains(villageReference3)) {
+            reference.setText(sharedpreferences.getString(villageReference3, "").trim());
+        }else if (position == 4 && sharedpreferences.contains(villageReference4)) {
+            reference.setText(sharedpreferences.getString(villageReference4, "").trim());
+        }
+    }
 }

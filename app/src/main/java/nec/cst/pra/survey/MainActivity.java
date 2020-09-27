@@ -33,30 +33,43 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import fr.arnaudguyon.xmltojsonlib.XmlToJson;
 
 import nec.cst.pra.GPSTracker;
 import nec.cst.pra.R;
+import nec.cst.pra.Vrp;
 import nec.cst.pra.app.AppConfig;
+import nec.cst.pra.app.AppController;
 import nec.cst.pra.app.GlideApp;
 import nec.cst.pra.app.HeaderFooterPageEvent;
 import nec.cst.pra.app.Imageutils;
+import nec.cst.pra.db.DbVrp;
 import nec.cst.pra.electricity.Electricity;
 import nec.cst.pra.electricity.ElectricityAddapter;
 import nec.cst.pra.electricity.ElectricityClick;
@@ -75,10 +88,11 @@ public class MainActivity extends AppCompatActivity implements NeedClick, Imageu
     DbHelperSurvey dbHelperSurvey;
     public static final String mypreference = "mypref";
     SharedPreferences sharedpreferences;
-    public static final String buStudentId = "buStudentIdKey";
+    public static final String buSurveyerId = "buSurveyerIdKey";
     private RecyclerView needsList;
     private MasterNeedsAdapter mRecyclerAdapterNeeds;
     private ArrayList<Need> needs;
+    private String TAG = getClass().getSimpleName();
 
 
     Imageutils imageutils;
@@ -130,6 +144,16 @@ public class MainActivity extends AppCompatActivity implements NeedClick, Imageu
     private ArrayList<Electricity> electricityArrayList = new ArrayList<>();
     ElectricityAddapter electricityAddapter;
 
+
+    public static final String vrpid = "vrpidKey";
+    public static final String update = "updateKey";
+    String vrpId = "";
+    public static final String tittle = "tittleKey";
+
+    private Vrp vrp;
+    DbVrp dbVrp;
+    Survey bean;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,10 +167,14 @@ public class MainActivity extends AppCompatActivity implements NeedClick, Imageu
 
         sharedpreferences = getSharedPreferences(mypreference,
                 Context.MODE_PRIVATE);
+        dbVrp = new DbVrp(this);
+        if (sharedpreferences.contains(vrpid)) {
+            vrpId = sharedpreferences.getString(vrpid, "").trim();
+        }
 
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(false);
-        getSupportActionBar().setTitle("Add Survey");
+        getSupportActionBar().setTitle("Add village Survey");
 
         addSurvey = (TextView) findViewById(R.id.submit);
 
@@ -173,10 +201,13 @@ public class MainActivity extends AppCompatActivity implements NeedClick, Imageu
 
         name = (EditText) findViewById(R.id.name);
         gramPanchayat = (EditText) findViewById(R.id.gramPanchayat);
+        gramPanchayat.setText(getIntent().getStringExtra("village"));
         wards = (EditText) findViewById(R.id.wards);
         block = (EditText) findViewById(R.id.block);
         district = (EditText) findViewById(R.id.district);
+        district.setText(getIntent().getStringExtra("district"));
         state = (EditText) findViewById(R.id.state);
+        state.setText(getIntent().getStringExtra("state"));
         constituency = (EditText) findViewById(R.id.constituency);
         distanceDistrictHQ = (EditText) findViewById(R.id.distanceDistrictHQ);
         villageArea = (EditText) findViewById(R.id.villageArea);
@@ -285,85 +316,15 @@ public class MainActivity extends AppCompatActivity implements NeedClick, Imageu
                         energyArea3.getText().toString(),
                         electricityArrayList
                 );
-                String studentId = sharedpreferences.getString(buStudentId, "");
                 if (surveyId != null) {
-                    int i = dbHelperSurvey.updateNote(surveyId, studentId, new Gson().toJson(survey));
-                    if (i > 0) {
-                        Toast.makeText(getApplicationContext(), "Updated successFully", Toast.LENGTH_SHORT).show();
-                    } else {
-                        dbHelperSurvey.insertSurvey(studentId + " " + String.valueOf(System.currentTimeMillis()), studentId, new Gson().toJson(survey));
-                        Toast.makeText(getApplicationContext(), "Recorded successFully", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    dbHelperSurvey.insertSurvey(studentId + " " + String.valueOf(System.currentTimeMillis()), studentId, new Gson().toJson(survey));
-                    Toast.makeText(getApplicationContext(), "Recorded successFully", Toast.LENGTH_SHORT).show();
+                    survey.setId(surveyId);
                 }
-
-                finish();
+                getCreateTest(new Gson().toJson(survey));
             }
         });
 
-        try {
-            Survey bean = (Survey) dbHelperSurvey.getAllNotes().get(0);
-            if (bean != null) {
 
-                surveyId = bean.id;
-                name.setText(bean.name);
-                gramPanchayat.setText(bean.gramPanchayat);
-                wards.setText(bean.wards);
-                block.setText(bean.block);
-                district.setText(bean.district);
-                state.setText(bean.state);
-                constituency.setText(bean.constituency);
-                distanceDistrictHQ.setText(bean.distanceDistrictHQ);
-                villageArea.setText(bean.villageArea);
-                arableLandAgricultureArea.setText(bean.arableLandAgricultureArea);
-                forestArea.setText(bean.forestArea);
-                housingAbadiArea.setText(bean.housingAbadiArea);
-                areaUnderWaterBodies.setText(bean.areaUnderWaterBodies);
-                commonLandsArea.setText(bean.commonLandsArea);
-                wasteLand.setText(bean.wasteLand);
-                waterTable.setText(bean.waterTable);
-                geoTag.setText(bean.geoTag);
-
-                distanceHighway.setText(bean.distanceHighway);
-                villageConnectedPaccaRoad.setText(bean.villageConnectedPaccaRoad);
-                roadLength.setText(bean.roadLength);
-                yearOfConstruction.setText(bean.yearOfConstruction);
-                schemeConstructed.setText(bean.schemeConstructed);
-                presentStatus.setText(bean.presentStatus);
-                lengthOfKachha.setText(bean.lengthOfKachha);
-                lengthOfPakkka.setText(bean.lengthOfPakkka);
-                modeOfTransport.setText(bean.modeOfTransport);
-                frequencyOfAvailable.setText(bean.frequencyOfAvailable);
-                typeOfForest.setText(bean.typeOfForest);
-                communityForest.setText(bean.communityForest);
-                governmentForest.setText(bean.governmentForest);
-                mainForestTrees.setText(bean.mainForestTrees);
-                energySpecies1.setText(bean.energySpecies1);
-                energyArea1.setText(bean.energyArea1);
-                energySpecies2.setText(bean.energySpecies2);
-                energyArea2.setText(bean.energyArea2);
-                energySpecies3.setText(bean.energySpecies3);
-                energyArea3.setText(bean.energyArea3);
-
-
-                if (bean.needs != null && bean.needs.size() != 0) {
-                    needs = bean.needs;
-                    mRecyclerAdapterNeeds.notifyData(needs);
-                }
-
-                if (bean.electricityArrayList != null && bean.electricityArrayList.size() != 0) {
-                    electricityArrayList = bean.electricityArrayList;
-                    electricityAddapter.notifyData(electricityArrayList);
-                }
-
-
-                addSurvey.setText("Update");
-            }
-        } catch (Exception e) {
-            Log.e("xxxxxx", "Something went wrong");
-        }
+        getAllData();
     }
 
 
@@ -684,60 +645,225 @@ public class MainActivity extends AppCompatActivity implements NeedClick, Imageu
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.print) {
-            try {
-                String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/PDF";
-                File dir = new File(path);
-                if (!dir.exists())
-                    dir.mkdirs();
-                Log.d("PDFCreator", "PDF Path: " + path);
-                File file = new File(dir,  dbHelperSurvey.getAllNotes().get(0).name + ".pdf");
-                FileOutputStream fOut = new FileOutputStream(file);
-                Document document = new Document();
-                document.setMargins(60, 60, 60, 60);
-                PdfWriter pdfWriter = PdfWriter.getInstance(document, fOut);
-                Rectangle rect = new Rectangle(175, 20, 530, 800);
-                pdfWriter.setBoxSize("art", rect);
+            if (bean != null) {
+                try {
+                    String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/PDF";
+                    File dir = new File(path);
+                    if (!dir.exists())
+                        dir.mkdirs();
+                    Log.d("PDFCreator", "PDF Path: " + path);
+                    File file = new File(dir, bean.name + ".pdf");
+                    FileOutputStream fOut = new FileOutputStream(file);
+                    Document document = new Document();
+                    document.setMargins(60, 60, 60, 60);
+                    PdfWriter pdfWriter = PdfWriter.getInstance(document, fOut);
+                    Rectangle rect = new Rectangle(175, 20, 530, 800);
+                    pdfWriter.setBoxSize("art", rect);
 
-                Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.cst_pdf);
-                Bitmap bu = BitmapFactory.decodeResource(getResources(), R.drawable.bu_logo);
+                    Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.cst_pdf);
+                    Bitmap bu = BitmapFactory.decodeResource(getResources(), R.drawable.bu_logo);
 
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                icon.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                byte[] byteArray = stream.toByteArray();
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    icon.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    byte[] byteArray = stream.toByteArray();
 
-                ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
-                bu.compress(Bitmap.CompressFormat.PNG, 100, stream1);
-                byte[] byteArray1 = stream1.toByteArray();
+                    ByteArrayOutputStream stream1 = new ByteArrayOutputStream();
+                    bu.compress(Bitmap.CompressFormat.PNG, 100, stream1);
+                    byte[] byteArray1 = stream1.toByteArray();
 
-                HeaderFooterPageEvent event = new HeaderFooterPageEvent(Image.getInstance(byteArray), Image.getInstance(byteArray1));
-                pdfWriter.setPageEvent(event);
+                    HeaderFooterPageEvent event = new HeaderFooterPageEvent(Image.getInstance(byteArray), Image.getInstance(byteArray1));
+                    pdfWriter.setPageEvent(event);
 
-                document.open();
-                AppConfig.addMetaData(document);
-                // AppConfig.addTitlePage(document);
-                AppConfig.addContent(document, dbHelperSurvey.getAllNotes().get(0), MainActivity.this);
-                document.close();
+                    document.open();
+                    AppConfig.addMetaData(document);
+                    // AppConfig.addTitlePage(document);
+                    AppConfig.addContent(document, bean, MainActivity.this);
+                    document.close();
 
 
-            } catch (Error | Exception e) {
-                e.printStackTrace();
+                } catch (Error | Exception e) {
+                    e.printStackTrace();
+                }
+                Uri photoURI = FileProvider.getUriForFile(getApplicationContext(),
+                        getApplicationContext().getPackageName() + AppConfig.packageName + ".provider",
+                        new File(Environment.getExternalStorageDirectory()
+                                .getAbsolutePath() + "/PDF/" + bean.name + ".pdf"));
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setDataAndType(photoURI
+                        , "application/pdf");
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(intent);
+
+                return true;
             }
-            Uri photoURI = FileProvider.getUriForFile(getApplicationContext(),
-                    getApplicationContext().getPackageName() + ".smart.cst.pra.provider",
-
-                    new File(Environment.getExternalStorageDirectory()
-                            .getAbsolutePath() + "/PDF/" +  dbHelperSurvey.getAllNotes().get(0).name + ".pdf"));
-
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(photoURI
-                    , "application/pdf");
-            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            startActivity(intent);
-
-            return true;
+        } else {
+            Toast.makeText(getApplicationContext(), "No data Found", Toast.LENGTH_SHORT).show();
         }
-
         return super.onOptionsItemSelected(item);
     }
+
+
+    private void getCreateTest(final String data) {
+        this.pDialog.setMessage("Creating...");
+        showDialog();
+        StringRequest local16 = new StringRequest(1, AppConfig.URL_CREATE_DAtA,
+                new Response.Listener<String>() {
+                    public void onResponse(String paramString) {
+                        Log.d("tag", "Register Response: " + paramString.toString());
+                        hideDialog();
+                        try {
+                            JSONObject localJSONObject1 = new JSONObject(paramString);
+                            String str = localJSONObject1.getString("message");
+                            if (localJSONObject1.getInt("success") == 1) {
+                                Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
+                            Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
+                            return;
+                        } catch (JSONException localJSONException) {
+                            localJSONException.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            public void onErrorResponse(VolleyError paramVolleyError) {
+                Log.e("tag", "Fetch Error: " + paramVolleyError.getMessage());
+                Toast.makeText(getApplicationContext(), paramVolleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                hideDialog();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                HashMap<String, String> localHashMap = new HashMap<String, String>();
+                if (surveyId != null) {
+                    localHashMap.put("id", surveyId);
+                }
+                localHashMap.put("name", getIntent().getStringExtra("village"));
+                localHashMap.put("createdby", sharedpreferences.getString(buSurveyerId, ""));
+                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+                Date date = new Date();
+                localHashMap.put("createdTime", formatter.format(date));
+                localHashMap.put("data", data);
+                localHashMap.put("dbname", "village");
+
+
+                return localHashMap;
+            }
+        };
+        AppController.getInstance().addToRequestQueue(local16, TAG);
+    }
+
+
+    private void hideDialog() {
+
+        if (this.pDialog.isShowing()) this.pDialog.dismiss();
+    }
+
+    private void showDialog() {
+
+        if (!this.pDialog.isShowing()) this.pDialog.show();
+    }
+
+
+    private void getAllData() {
+        String tag_string_req = "req_register";
+        pDialog.setMessage("Validating ...");
+        showDialog();
+        // showDialog();
+        StringRequest strReq = new StringRequest(Request.Method.POST,
+                AppConfig.URL_GET_DATA, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("Register Response: ", response.toString());
+                try {
+                    JSONObject jObj = new JSONObject(response);
+                    boolean error = jObj.getBoolean("error");
+                    if (!error) {
+                        JSONObject dataObject = jObj.getJSONArray("datas").getJSONObject(0);
+                        bean = new Gson().fromJson(dataObject.getString("data"), Survey.class);
+                        bean.setId(dataObject.getString("id"));
+                        if (bean != null) {
+
+                            surveyId = bean.id;
+                            name.setText(bean.name);
+                            gramPanchayat.setText(bean.gramPanchayat);
+                            wards.setText(bean.wards);
+                            block.setText(bean.block);
+                            district.setText(bean.district);
+                            state.setText(bean.state);
+                            constituency.setText(bean.constituency);
+                            distanceDistrictHQ.setText(bean.distanceDistrictHQ);
+                            villageArea.setText(bean.villageArea);
+                            arableLandAgricultureArea.setText(bean.arableLandAgricultureArea);
+                            forestArea.setText(bean.forestArea);
+                            housingAbadiArea.setText(bean.housingAbadiArea);
+                            areaUnderWaterBodies.setText(bean.areaUnderWaterBodies);
+                            commonLandsArea.setText(bean.commonLandsArea);
+                            wasteLand.setText(bean.wasteLand);
+                            waterTable.setText(bean.waterTable);
+                            geoTag.setText(bean.geoTag);
+
+                            distanceHighway.setText(bean.distanceHighway);
+                            villageConnectedPaccaRoad.setText(bean.villageConnectedPaccaRoad);
+                            roadLength.setText(bean.roadLength);
+                            yearOfConstruction.setText(bean.yearOfConstruction);
+                            schemeConstructed.setText(bean.schemeConstructed);
+                            presentStatus.setText(bean.presentStatus);
+                            lengthOfKachha.setText(bean.lengthOfKachha);
+                            lengthOfPakkka.setText(bean.lengthOfPakkka);
+                            modeOfTransport.setText(bean.modeOfTransport);
+                            frequencyOfAvailable.setText(bean.frequencyOfAvailable);
+                            typeOfForest.setText(bean.typeOfForest);
+                            communityForest.setText(bean.communityForest);
+                            governmentForest.setText(bean.governmentForest);
+                            mainForestTrees.setText(bean.mainForestTrees);
+                            energySpecies1.setText(bean.energySpecies1);
+                            energyArea1.setText(bean.energyArea1);
+                            energySpecies2.setText(bean.energySpecies2);
+                            energyArea2.setText(bean.energyArea2);
+                            energySpecies3.setText(bean.energySpecies3);
+                            energyArea3.setText(bean.energyArea3);
+
+
+                            if (bean.needs != null && bean.needs.size() != 0) {
+                                needs = bean.needs;
+                                mRecyclerAdapterNeeds.notifyData(needs);
+                            }
+
+                            if (bean.electricityArrayList != null && bean.electricityArrayList.size() != 0) {
+                                electricityArrayList = bean.electricityArrayList;
+                                electricityAddapter.notifyData(electricityArrayList);
+                            }
+
+
+                            addSurvey.setText("Update");
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.e("xxxxxxxxxxx", e.toString());
+                }
+                hideDialog();
+
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Toast.makeText(getApplicationContext(),
+                        "Some Network Error.Try after some time", Toast.LENGTH_LONG).show();
+                hideDialog();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                HashMap localHashMap = new HashMap();
+                localHashMap.put("key", "village");
+                localHashMap.put("createdby", sharedpreferences.getString(buSurveyerId, ""));
+                localHashMap.put("name", getIntent().getStringExtra("village"));
+                return localHashMap;
+            }
+        };
+        AppController.getInstance().addToRequestQueue(strReq, tag_string_req);
+    }
+
 }

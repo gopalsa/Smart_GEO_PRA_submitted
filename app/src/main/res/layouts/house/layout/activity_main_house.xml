@@ -108,7 +108,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1">
 
-                <nec.cst.pra.CustomFontEditText
+                <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
                     android:id="@+id/gramPanchayat"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -117,10 +117,7 @@
                     android:hint="Gram Panchayat"
                     android:inputType="textCapWords"
                     android:textColorHint="#c6c6c6"
-                    android:textSize="15dp"
-                    app:category="@string/selectable"
-                    app:choices="Nalatinpudhur,Villiseri,Mudukkumeendanpatti,Ayyanaeri,Padardhapuli"
-                    app:tittle="Gram Panchayat" />
+                    android:textSize="15dp" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -210,6 +207,7 @@
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <EditText
                     android:id="@+id/name"
                     android:layout_width="match_parent"
@@ -219,14 +217,16 @@
                     android:hint="@string/name"
                     android:inputType="textCapWords"
                     android:textColorHint="#c6c6c6"
-                    android:textSize="15dp"/>
+                    android:textSize="15dp" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <nec.cst.pra.CustomFontEditText
                     android:id="@+id/gender"
                     android:layout_width="match_parent"
@@ -239,14 +239,16 @@
                     android:textSize="15dp"
                     app:category="@string/selectable"
                     app:choices="Male,Female,others"
-                    app:tittle="@string/gender"/>
+                    app:tittle="@string/gender" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <EditText
                     android:id="@+id/age"
                     android:layout_width="match_parent"
@@ -256,14 +258,16 @@
                     android:hint="@string/age"
                     android:inputType="textCapWords"
                     android:textColorHint="#c6c6c6"
-                    android:textSize="15dp"/>
+                    android:textSize="15dp" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <EditText
                     android:id="@+id/household"
                     android:layout_width="match_parent"
@@ -273,14 +277,16 @@
                     android:hint="@string/household"
                     android:inputType="textCapWords"
                     android:textColorHint="#c6c6c6"
-                    android:textSize="15dp"/>
+                    android:textSize="15dp" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <EditText
                     android:id="@+id/contactNo"
                     android:layout_width="match_parent"
@@ -290,14 +296,16 @@
                     android:hint="@string/contactNo"
                     android:inputType="textCapWords"
                     android:textColorHint="#c6c6c6"
-                    android:textSize="15dp"/>
+                    android:textSize="15dp" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <EditText
                     android:id="@+id/idCardType"
                     android:layout_width="match_parent"
@@ -307,14 +315,16 @@
                     android:hint="@string/idCardType"
                     android:inputType="textCapWords"
                     android:textColorHint="#c6c6c6"
-                    android:textSize="15dp"/>
+                    android:textSize="15dp" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <EditText
                     android:id="@+id/idCardNo"
                     android:layout_width="match_parent"
@@ -324,7 +334,7 @@
                     android:hint="@string/idCardNo"
                     android:inputType="textCapWords"
                     android:textColorHint="#c6c6c6"
-                    android:textSize="15dp"/>
+                    android:textSize="15dp" />
             </android.support.design.widget.TextInputLayout>
 
 
@@ -341,13 +351,13 @@
                 android:textSize="17sp" />
 
 
-
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <EditText
                     android:id="@+id/householdId"
                     android:layout_width="match_parent"
@@ -357,14 +367,16 @@
                     android:hint="@string/householdId"
                     android:inputType="textCapWords"
                     android:textColorHint="#c6c6c6"
-                    android:textSize="15dp"/>
+                    android:textSize="15dp" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <EditText
                     android:id="@+id/nameOfhead"
                     android:layout_width="match_parent"
@@ -374,14 +386,16 @@
                     android:hint="@string/nameOfhead"
                     android:inputType="textCapWords"
                     android:textColorHint="#c6c6c6"
-                    android:textSize="15dp"/>
+                    android:textSize="15dp" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <nec.cst.pra.CustomFontEditText
                     android:id="@+id/houseGender"
                     android:layout_width="match_parent"
@@ -394,14 +408,16 @@
                     android:textSize="15dp"
                     app:category="@string/selectable"
                     app:choices="Male,Female,others"
-                    app:tittle="@string/houseGender"/>
+                    app:tittle="@string/houseGender" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <nec.cst.pra.CustomFontEditText
                     android:id="@+id/category"
                     android:layout_width="match_parent"
@@ -414,14 +430,16 @@
                     android:textSize="15dp"
                     app:category="@string/selectable"
                     app:choices="General,SC,ST,OBC"
-                    app:tittle="@string/category"/>
+                    app:tittle="@string/category" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <nec.cst.pra.CustomFontEditText
                     android:id="@+id/povertyStatus"
                     android:layout_width="match_parent"
@@ -434,14 +452,16 @@
                     android:textSize="15dp"
                     app:category="@string/selectable"
                     app:choices="APL,BPL"
-                    app:tittle="@string/povertyStatus"/>
+                    app:tittle="@string/povertyStatus" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <nec.cst.pra.CustomFontEditText
                     android:id="@+id/ownHouse"
                     android:layout_width="match_parent"
@@ -454,14 +474,16 @@
                     android:textSize="15dp"
                     app:category="@string/selectable"
                     app:choices="Yes,No"
-                    app:tittle="@string/ownHouse"/>
+                    app:tittle="@string/ownHouse" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <nec.cst.pra.CustomFontEditText
                     android:id="@+id/typeOfHouse"
                     android:layout_width="match_parent"
@@ -474,14 +496,16 @@
                     android:textSize="15dp"
                     app:category="@string/selectable"
                     app:choices="Kutcha,SemiPucca,Pucca,Homeless"
-                    app:tittle="@string/typeOfHouse"/>
+                    app:tittle="@string/typeOfHouse" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <nec.cst.pra.CustomFontEditText
                     android:id="@+id/toilet"
                     android:layout_width="match_parent"
@@ -494,14 +518,16 @@
                     android:textSize="15dp"
                     app:category="@string/selectable"
                     app:choices="Private,Community,Open Defecation"
-                    app:tittle="@string/toilet"/>
+                    app:tittle="@string/toilet" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <nec.cst.pra.CustomFontEditText
                     android:id="@+id/drainage"
                     android:layout_width="match_parent"
@@ -514,14 +540,16 @@
                     android:textSize="15dp"
                     app:category="@string/selectable"
                     app:choices="Covered,Open,None"
-                    app:tittle="@string/drainage"/>
+                    app:tittle="@string/drainage" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <nec.cst.pra.CustomFontEditText
                     android:id="@+id/wasteSystem"
                     android:layout_width="match_parent"
@@ -534,14 +562,16 @@
                     android:textSize="15dp"
                     app:category="@string/selectable"
                     app:choices="Door Step,Common Point,No Collection System"
-                    app:tittle="@string/wasteSystem"/>
+                    app:tittle="@string/wasteSystem" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <nec.cst.pra.CustomFontEditText
                     android:id="@+id/compostPit"
                     android:layout_width="match_parent"
@@ -554,14 +584,16 @@
                     android:textSize="15dp"
                     app:category="@string/selectable"
                     app:choices="Individual,Group,None"
-                    app:tittle="@string/compostPit"/>
+                    app:tittle="@string/compostPit" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <nec.cst.pra.CustomFontEditText
                     android:id="@+id/biogasPlant"
                     android:layout_width="match_parent"
@@ -574,14 +606,16 @@
                     android:textSize="15dp"
                     app:category="@string/selectable"
                     app:choices="Individual,Group,Community,None"
-                    app:tittle="@string/biogasPlant"/>
+                    app:tittle="@string/biogasPlant" />
             </android.support.design.widget.TextInputLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:layout_weight="1">
+
                 <EditText
                     android:id="@+id/annualInncom"
                     android:layout_width="match_parent"
@@ -591,10 +625,8 @@
                     android:hint="@string/annualInncom"
                     android:inputType="textCapWords"
                     android:textColorHint="#c6c6c6"
-                    android:textSize="15dp"/>
+                    android:textSize="15dp" />
             </android.support.design.widget.TextInputLayout>
-
-
 
 
             <LinearLayout

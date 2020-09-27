@@ -149,6 +149,16 @@ public class FingerprintActivity extends AppCompatActivity {
             }
         });
 
+
+        final TextView forgotpassword = (TextView) findViewById(R.id.forgotPassword);
+        forgotpassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent io = new Intent(FingerprintActivity.this, ForgotPassword.class);
+                startActivity(io);
+            }
+        });
+
         textView = (TextView) findViewById(R.id.errorText);
 
         try {

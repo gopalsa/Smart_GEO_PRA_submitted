@@ -18,16 +18,19 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.gson.Gson;
+import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,9 +45,11 @@ import nec.cst.pra.ConvertUtils;
 import nec.cst.pra.GPSTracker;
 import nec.cst.pra.R;
 import nec.cst.pra.Vrp;
+import nec.cst.pra.app.AppConfig;
 import nec.cst.pra.app.AppController;
 import nec.cst.pra.db.DbProfile;
 import nec.cst.pra.db.DbVrp;
+import retrofit2.http.GET;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -55,7 +60,7 @@ public class MainActivityHouseHold extends AppCompatActivity implements OnItemCl
     public EditText village;
     public EditText wardNo;
     public EditText district;
-    public EditText gramPanchayat;
+    public MaterialBetterSpinner gramPanchayat;
     public EditText block;
     public EditText state;
     public EditText name;
@@ -160,6 +165,16 @@ public class MainActivityHouseHold extends AppCompatActivity implements OnItemCl
 
     GPSTracker gps;
 
+
+    Map<String, String> uniVillageList = new HashMap<String, String>() {{
+        put("One", "");
+        put("One", "");
+    }};
+
+    private String[] GP = new String[]{
+            "Loading",
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,8 +188,6 @@ public class MainActivityHouseHold extends AppCompatActivity implements OnItemCl
             vrpId = sharedpreferences.getString(vrpid, "").trim();
         }
 
-        pDialog = new ProgressDialog(this);
-        pDialog.setCancelable(false);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         vrp = new Gson().fromJson(ConvertUtils.sample(dbVrp.getDataByvrpid(vrpId).get(1)), Vrp.class);
@@ -235,11 +248,15 @@ public class MainActivityHouseHold extends AppCompatActivity implements OnItemCl
         });
 
 
-        geotag = (EditText) findViewById(R.id.geotag);
         village = (EditText) findViewById(R.id.village);
         wardNo = (EditText) findViewById(R.id.wardNo);
         district = (EditText) findViewById(R.id.district);
-        gramPanchayat = (EditText) findViewById(R.id.gramPanchayat);
+        gramPanchayat = (MaterialBetterSpinner) findViewById(R.id.gramPanchayat);
+
+        ArrayAdapter<String> sexAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, GP);
+        gramPanchayat.setAdapter(sexAdapter);
+
         block = (EditText) findViewById(R.id.block);
         state = (EditText) findViewById(R.id.state);
         name = (EditText) findViewById(R.id.name);
@@ -318,6 +335,7 @@ public class MainActivityHouseHold extends AppCompatActivity implements OnItemCl
         }
         survey = (EditText) findViewById(R.id.survey);
 
+        geotag = (EditText) findViewById(R.id.geotag);
         ImageView georefresh = (ImageView) findViewById(R.id.refresh);
 
         geotag.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -347,6 +365,8 @@ public class MainActivityHouseHold extends AppCompatActivity implements OnItemCl
             }
         });
 
+
+        getVillages();
         TextView submit = (TextView) findViewById(R.id.submit);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -976,6 +996,61 @@ public class MainActivityHouseHold extends AppCompatActivity implements OnItemCl
                 localHashMap.put("data", data);
                 localHashMap.put("db", "nec");
 
+                return localHashMap;
+            }
+        };
+        AppController.getInstance().addToRequestQueue(local16, TAG);
+    }
+
+    private void getVillages() {
+        this.pDialog.setMessage("Fetching...");
+        showDialog();
+        StringRequest local16 = new StringRequest(Request.Method.GET, AppConfig.URL_UNI_DETAIL_NAME + "?name=" + vrp.getInstitution(), new Response.Listener<String>() {
+            public void onResponse(String paramString) {
+                Log.d("tag", "Register Response: " + paramString.toString());
+                hideDialog();
+                try {
+                    JSONObject localJSONObject1 = new JSONObject(paramString);
+                    String str = localJSONObject1.getString("message");
+                    if (localJSONObject1.getInt("success") == 1) {
+                        JSONObject dataObject = localJSONObject1.getJSONArray("detail").getJSONObject(0);
+                        String villagenames = dataObject.getString("VillageName");
+                        district.setText(dataObject.getString("District"));
+                        state.setText(dataObject.getString("State"));
+
+                        String[] lists = villagenames.split(",");
+
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (int i = 0; i < lists.length; i++) {
+                            String name = lists[i].trim();
+                            if (name.length() > 2) {
+                                stringBuilder.append(name);
+                                if (i != lists.length - 1) {
+                                    stringBuilder.append(",");
+                                }
+                            }
+                        }
+                        GP = stringBuilder.toString().split(",");
+                        ArrayAdapter<String> sexAdapter = new ArrayAdapter<String>(MainActivityHouseHold.this,
+                                android.R.layout.simple_dropdown_item_1line, GP);
+                        gramPanchayat.setAdapter(sexAdapter);
+
+                    }
+                    Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
+                    return;
+                } catch (JSONException localJSONException) {
+                    localJSONException.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            public void onErrorResponse(VolleyError paramVolleyError) {
+                Log.e("tag", "Fetch Error: " + paramVolleyError.getMessage());
+                Toast.makeText(getApplicationContext(), paramVolleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                hideDialog();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                HashMap<String, String> localHashMap = new HashMap<String, String>();
                 return localHashMap;
             }
         };

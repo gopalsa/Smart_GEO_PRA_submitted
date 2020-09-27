@@ -181,7 +181,7 @@ public class CustomFontEditText extends android.support.v7.widget.AppCompatEditT
         return result;
     }
 
-    private void pickDate(Context context) {
+    public void pickDate(Context context) {
         // Get Current Date
         final Calendar c = Calendar.getInstance();
         mYear = c.get(Calendar.YEAR);

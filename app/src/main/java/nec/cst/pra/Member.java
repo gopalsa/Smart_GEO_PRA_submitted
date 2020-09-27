@@ -16,6 +16,7 @@ public class Member {
     String education;
     String experience;
     String socialmedia;
+    String category;
 
 
     public Member(String image, String name, String designation, String designationinpra, String address, String pincode, String geotag, String phone, String education, String experience, String socialmedia) {
@@ -30,6 +31,14 @@ public class Member {
         this.education = education;
         this.experience = experience;
         this.socialmedia = socialmedia;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getPincode() {
@@ -118,5 +127,19 @@ public class Member {
 
     public void setSocialmedia(String socialmedia) {
         this.socialmedia = socialmedia;
+    }
+
+    @Override
+    public String toString() {
+        return "Name : " + name + '\n' +
+                "Designation : " + designation + '\n' +
+                "Designation in PRA : " + designationinpra + '\n' +
+                "Address : " + address + '\n' +
+                "Pincode : " + pincode + '\n' +
+                "Geotag : " + geotag + '\n' +
+                "Phone : " + phone + '\n' +
+                "Education : " + education + '\n' +
+                "Experience : " + experience + '\n' +
+                "Social media : " + socialmedia + '\n';
     }
 }
